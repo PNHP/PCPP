@@ -4,26 +4,26 @@
 '     SOURCE [AMOUNT] TARGET
 ' Examples:
 
-Total [2132] Dicots
-Total [892] Monocots
-Total [29] Gymnosperm
-Total [126] Pteridophyte
-Total [609] Bryophytes
+Total [1436] Dicots
+Total [736] Monocots
+Total [18] Gymnosperm
+Total [118] Pteridophyte
+Total [607] Bryophytes
 Total [435] Lichens
 
-Dicots [1665] Not Tracked
+Dicots [973] Not Tracked
 Dicots [368] Tracked
-Dicots [99] Watch
-Monocots [558] Not Tracked
+Dicots [95] Watch
+Monocots [402] Not Tracked
 Monocots [259] Tracked
 Monocots [75] Watch
-Gymnosperm [21] Not Tracked
+Gymnosperm [10] Not Tracked
 Gymnosperm [3] Tracked
 Gymnosperm [5] Watch
-Pteridophyte [82] Not Tracked
+Pteridophyte [74] Not Tracked
 Pteridophyte [27] Tracked
 Pteridophyte [17] Watch
-Bryophytes [301] Not Tracked
+Bryophytes [299] Not Tracked
 Bryophytes [308] Tracked
 Lichens [428] Not Tracked
 Lichens [7] Watch
