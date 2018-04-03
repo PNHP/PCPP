@@ -1,0 +1,30 @@
+' Type a list of Flows, like this:
+'     SOURCE [AMOUNT] TARGET
+' Examples:
+
+Total [2132] Dicots
+Total [892] Monocots
+Total [29] Gymnosperm
+Total [126] Pteridophyte
+Total [609] Bryophytes
+Total [435] Lichens
+
+Dicots [1782] Not in ER
+Dicots [350] In ER
+Monocots [639] Not in ER
+Monocots [253] In ER
+Gymnosperm [26] Not in ER
+Gymnosperm [3] In ER
+Pteridophyte [99] Not in ER
+Pteridophyte [27] In ER
+Bryophytes [301] Not in ER
+Bryophytes [308] In ER
+Lichens [435] Not in ER
+
+
+' After your Flows are entered, use the
+' controls below to customize your
+' diagram's appearance.
+
+' For even finer control over presentation,
+' see the Manual (linked above).
