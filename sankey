@@ -1,0 +1,47 @@
+' http://sankeymatic.com/build/
+
+' Type a list of Flows, like this:
+'     SOURCE [AMOUNT] TARGET
+' Examples:
+
+Total [2132] Dicots
+Total [892] Monocots
+Total [29] Gymnosperm
+Total [126] Pteridophyte
+Total [609] Bryophytes
+Total [435] Lichens
+
+Dicots [1664] Not Tracked
+Dicots [368] Tracked
+Dicots [99] Watch
+Dicots [1] Blank
+
+Monocots [557] Not Tracked
+Monocots [259] Tracked
+Monocots [75] Watch
+Monocots [1] Blank
+
+Gymnosperm [21] Not Tracked
+Gymnosperm [3] Tracked
+Gymnosperm [5] Watch
+
+Pteridophyte [82] Not Tracked
+Pteridophyte [27] Tracked
+Pteridophyte [17] Watch
+
+Bryophytes [268] Not Tracked
+Bryophytes [308] Tracked
+Bryophytes [33] Blank
+
+Lichens [1] Not Tracked
+Lichens [7] Watch
+Lichens [427] Blank
+
+
+
+' After your Flows are entered, use the
+' controls below to customize your
+' diagram's appearance.
+
+' For even finer control over presentation,
+' see the Manual (linked above).
