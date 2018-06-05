@@ -3,7 +3,7 @@ require(RSQLite)
 if (!requireNamespace("knitr", quietly=TRUE)) install.packages("knitr")
 require(knitr)
 
-loc_scripts <- "P:/Conservation Programs/Natural Heritage Program/Projects/Active projects/1495 DCNR Plant Conservation Plan/Project Materials and Data/data"
+loc_scripts <- "E:/pcpp/PCPP"
 source(paste(loc_scripts, "0_PathsAndSettings.R", sep = "/"))
 setwd(working_directory)
 
@@ -13,7 +13,6 @@ setwd(working_directory)
 source("ET_processor.R")
 
 # IUCN redlist
-databasename <- "PlantConservationPlan.sqlite"
 db <- dbConnect(SQLite(), dbname = databasename)
 SQLquery_IUCN <- paste("SELECT SNAME, `Red.List.status`, `Red.List.criteria`, `Population.trend`, PA_present"," FROM redlist ")
 dataRedlist <- dbGetQuery(db, statement = SQLquery_IUCN )
@@ -21,7 +20,6 @@ dataRedlist <- dbGetQuery(db, statement = SQLquery_IUCN )
 
 ##############  report generation  #######################
 print("Generating the PDF report...") # report out to ArcGIS
-#setwd(working_directory)
 daytime <-gsub("[^0-9]", "", Sys.time() )    # makes a report time variable
 #knit2pdf(paste(working_directory,"pcpp_report.rnw",sep="/"), output=paste("pcppReport",daytime, ".tex",sep=""))   #write the pdf
 knit("pcpp_report.rnw", output=paste("pcppReport",daytime, ".tex",sep=""))

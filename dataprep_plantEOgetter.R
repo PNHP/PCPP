@@ -1,16 +1,17 @@
-library(arcgisbinding)
-library(sp)
-library(rgdal)
-library(rgeos)
+if (!requireNamespace("arcgisbinding", quietly=TRUE)) install.packages("arcgisbinding")
+require(arcgisbinding)
+if (!requireNamespace("sp", quietly=TRUE)) install.packages("sp")
+require(sp)
+if (!requireNamespace("rgdal", quietly=TRUE)) install.packages("rgdal")
+require(rgdal)
+if (!requireNamespace("rgeos", quietly=TRUE)) install.packages("rgeos")
+require(rgeos)
+
 arc.check_product()
 
 loc_scripts <- "E:/pcpp/PCPP"
 source(paste(loc_scripts, "0_PathsAndSettings.R", sep = "/"))
 setwd(working_directory)
-
-# arc geodatabase directory
-loc_eo <- "W:/Heritage/Heritage_Data/Biotics_datasets.gdb"
-
 
 # load and report on EOs
 ## EO point reps

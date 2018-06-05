@@ -1,5 +1,9 @@
-library(xlsx)
-library(RSQLite)
+if (!requireNamespace("xlsx", quietly=TRUE)) install.packages("xlsx")
+require(xlsx)
+if (!requireNamespace("RSQLite", quietly=TRUE)) install.packages("RSQLite")
+require(RSQLite)
+if (!requireNamespace("data.table", quietly=TRUE)) install.packages("data.table")
+require(data.table)
 
 loc_scripts <- "E:/pcpp/PCPP"
 source(paste(loc_scripts, "0_PathsAndSettings.R", sep = "/"))
@@ -16,6 +20,7 @@ et <- read.xlsx(paste(et_path, et_file, sep="/"), sheetName=et_sheet)
 
 # subset to vascular and nonvascular plants
 et_plants <- et[(substr(et$ELCODE,1,1)=="P")|(substr(et$ELCODE,1,1)=="N"), ]
+et <- NULL # delete the ET dataframe as its not longer needed
 
 # delete un-needed columns
 et_plants$SWG.STATUS <- NULL
@@ -26,9 +31,10 @@ rounded_grank <- read.csv("reference_data/rounded_grank.csv",stringsAsFactors=FA
 rounded_srank <- read.csv("reference_data/rounded_srank.csv",stringsAsFactors=FALSE) 
 et_plants <- merge(x=et_plants, y=rounded_grank, by="G.RANK", all.x=TRUE)
 et_plants <- merge(x=et_plants, y=rounded_srank, by="S.RANK", all.x=TRUE)
-
-
-
+rounded_grank <- NULL
+rounded_srank <- NULL
+ 
+# The following section identifies which species and subspecific taxa are present in the state and subsets the list to be just those
 # find potential overlapping taxa due to subspecies/variabties
 specname <- as.character(et_plants$SCIENTIFIC.NAME)
 specname1 <- sub("^(.*? .*?) .*", "\\1", specname)
@@ -37,26 +43,49 @@ spec_dup <- spec_dup[!grepl(" x", spec_dup)] #get rid of hybrids
 spec_dup <- sort(spec_dup)
 spec_dup <- unique(spec_dup)
 
-et_plants$dup <- duplicated(sub("^(.*? .*?) .*", "\\1", specname))
+spec_sspvar <- specname[specname %like% " var. "|specname %like% " ssp. " ]
 
-###  make a list of taxa we only care about at the species level!
+# sees what records we have in Biotics
+if (!requireNamespace("arcgisbinding", quietly=TRUE)) install.packages("arcgisbinding")
+require(arcgisbinding)
+arc.check_product()
+eo_ptreps <- paste(loc_eo,"eo_ptreps",sep="/") ## EO point reps to get a list of species we have records for in biotics
+eo_ptreps <- arc.open(eo_ptreps)
+eo_ptreps_plants <- arc.select(eo_ptreps, fields=c('ELCODE','SNAME','SCOMNAME','ELSUBID'), where_clause="ELCODE LIKE 'P%'") 
+eo_ptreps <- NULL
+biotics_records <- unique(eo_ptreps_plants)
+biotics_records <- biotics_records[order(biotics_records$SNAME),]
 
-lump_species <- c("Acaulon muticum","Alnus incana","Anemone virginiana","Arabis shortii","Arisaema triphyllum","Asclepias incarnata","Athyrium filix-femina","Aureolaria flava","Blepharostoma trichophyllum","Boehmeria cylindrica","Calamagrostis canadensis","Caltha palustris","Calycanthus floridus","Calypogeia fissa","Calypogeia muelleriana","Calystegia silvatica","Calystegia spithamaea","Cardamine parviflora","Carex atlantica","Carex canescens","Carex crinita","Carex debilis","Carex granularis","Carex laxiculmis","Carex stipata","Carex tonsa","Cephalozia bicuspidata","Cephaloziella divaricata","Cephaloziella rubella","Chamaedaphne calyculata","Chenopodium album","Chenopodium strictum","Chiloscyphus pallescens","Chiloscyphus polyanthos","Cicuta maculata","Cladonia macilenta","Collema undulatum","Conyza canadensis","Coptis trifolia","Cornus amomum","Cuscuta gronovii","Diplophyllum apiculatum","Dryopteris filix-mas","Dumortiera hirsuta","Echinochloa crusgalli","Elymus canadensis","Elymus virginicus","Equisetum hyemale","Erigeron strigosus","Eupatorium album","Eupatorium sessilifolium","Euthamia graminifolia","Fragaria vesca","Fragaria virginiana","Fraxinus americana","Galium circaezans","Gentiana andrewsii","Geum canadense","Geum laciniatum","Gymnocolea inflata","Herbertus aduncus","Hierochloe hirta","Houstonia purpurea","Hygroamblystegium tenax","Hypnum cupressiforme","Juncus effusus","Juncus tenuis","Juniperus communis","Lactuca canadensis","Lactuca floridana","Lathyrus palustris","Leptochloa fascicularis","Lespedeza capitata","Liatris scariosa","Lilium canadense","Lindernia dubia","Linum medium","Lobelia spicata","Lolium perenne","Lonicera dioica","Lophocolea cuspidata","Luzula acuminata","Lycopodium clavatum","Melampyrum lineare","Metzgeria furcata","Milium effusum","Monarda fistulosa","Nardia geoscyphus","Odontoschisma denudatum","Oenothera fruticosa","Osmunda regalis","Oxalis dillenii","Panicum amarum","Paspalum floridanum","Pellaea glabella","Persicaria amphibia","Phaeoceros laevis","Phlox divaricata","Phlox maculata","Platanthera flava","Polanisia dodecandra","Polygala senega","Polygala verticillata","Polygonatum biflorum","Polygonum aviculare","Polytrichum commune","Potamogeton alpinus","Potentilla norvegica","Proserpinaca palustris","Prunella vulgaris","Pteridium aquilinum","Ranunculus abortivus","Ranunculus hispidus","Ranunculus sceleratus","Rhus aromatica","Riccardia multifida","Rorippa palustris","Rosa carolina","Rubus idaeus","Rudbeckia fulgida","Rudbeckia hirta","Sagittaria graminea","Sagittaria latifolia","Salix humilis","Salsola kali","Scapania curta","Scapania irrigua","Scapania paludicola","Scapania undulata","Schistidium apocarpum","Scutellaria elliptica","Silene caroliniana","Solidago canadensis","Solidago gigantea","Solidago rugosa","Solidago simplex","Solidago ulmifolia","Sphenopholis obtusata","Spiranthes lacera","Sporobolus compositus" ,"Stachys hyssopifolia","Stachys palustris","Symphyotrichum lanceolatum","Symphyotrichum novi-belgii","Symphyotrichum patens","Symphyotrichum pilosum", "Symphyotrichum puniceum","Teucrium canadense","Thaspium trifoliatum","Thelypteris palustris","Tilia americana","Torreyochloa pallida","Tortella inclinata","Triodanis perfoliata","Triosteum aurantiacum","Tritomaria exsectiformis","Urtica dioica","Verbena urticifolia","Veronica peregrina","Viola macloskeyi","Viola sagittata","Vitis cinerea","Vulpia octoflora","Xanthium strumarium","Zizania aquatica","Zizania palustris")
+# if the species is in biotics label it as so
+et_plants$temp_taxostatus[et_plants$SCIENTIFIC.NAME %in% biotics_records$SNAME] <- "in biotics"
 
-DoNotLump <- c("Alnus viridis","Andromeda polifolia","Arabis hirsuta","Arabis laevigata","Aristida dichotoma","Aristida longespica","Artemisia campestris","Cardamine pratensis","Cerastium velutinum","Chaerophyllum procumbens","Cypripedium parviflorum","Dichanthelium commonsianum","Eleocharis obtusa","Eleocharis pauciflora","Eleocharis tenuis","Eupatorium rotundifolium","Juncus alpinoarticulatus","Lactuca hirsuta","Onosmodium molle","Paronychia fastigiata","Paspalum setaceum","Phlox subulata","Phragmites australis","Physalis pubescens","Polygonum punctatum","Polygonum ramosissimum","Prunus pumila","Pycnanthemum verticillatum","Ranunculus aquatilis","Sagittaria calycina","Schizachyrium scoparium","Sisyrinchium montanum","Solidago arguta","Solidago speciosa","Symphoricarpos albus" ,"Symphyotrichum laeve")
+# find the species that are not in biotics, but they have a subsp or variety
+spec_sspvar_noBiotics <- et_plants$SCIENTIFIC.NAME[((et_plants$SCIENTIFIC.NAME %like% " var. "|et_plants$SCIENTIFIC.NAME %like% " ssp. ") & is.na(et_plants$temp_taxostatus) & (et_plants$TRACKING.STATUS!="Y"|et_plants$TRACKING.STATUS!="W") ) ]
+
+only_subspecific_taxa <- spec_sspvar_noBiotics[!(sub("^(.*? .*?) .*", "\\1", spec_sspvar_noBiotics) %in% et_plants$SCIENTIFIC.NAME )]
+
+spec_sspvar_noBiotics <- setdiff(spec_sspvar_noBiotics, only_subspecific_taxa )
+
+spec_sspvar_noBiotics <- as.character(droplevels(spec_sspvar_noBiotics)) 
+spec_sspvar_noBiotics <- na.omit(spec_sspvar_noBiotics)
+
+# if the species is in biotics label it as so
+et_plants$temp_taxostatus[et_plants$SCIENTIFIC.NAME %in% spec_sspvar_noBiotics] <- "subspecific taxa, effective duplicate"
+
+#subset out the duplicates and use this from now on!
+et_plants <- et_plants[et_plants$temp_taxostatus!="subspecific taxa, effective duplicate",]
 
 
-
+#####################################
 #get taxonomic information
 taxo <- read.csv("reference_data/taxonomy.csv",stringsAsFactors=FALSE)
 keeps <- c("ELEMENT_SUBNATIONAL_ID","ELCODE","CLASS","TAX_ORDER","FAMILY","GLOBAL_NAME","GLOBAL_COMNAME","PA_NAME","PA_COMNAME","CLASSIFICATION_COM","ORIGIN","REGULARITY","DIST_CONFIDENCE","CURR_PRESENCE_ABSENCE")
 taxo <- taxo[keeps]
 
 # write to the SQLite db
-databasename <- "PlantConservationPlan.sqlite"
 db <- dbConnect(SQLite(), dbname = databasename)
-dbWriteTable(db, "et_plants",et_plants)
-dbWriteTable(db, "taxo", taxo)
+dbWriteTable(db, "et_plants",et_plants, overwrite=TRUE)
+dbWriteTable(db, "taxo", taxo, overwrite=TRUE)
 dbDisconnect(db)
 
 # create a table of granks by sranks

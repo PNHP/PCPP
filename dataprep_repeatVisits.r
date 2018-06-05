@@ -1,5 +1,6 @@
 # code to get a count of the repeat visits to particular EOs/SFs
-library(plyr)
+if (!requireNamespace("plyr", quietly=TRUE)) install.packages("plyr")
+require(plyr)
 
 loc_scripts <- "E:/pcpp/PCPP"
 source(paste(loc_scripts, "0_PathsAndSettings.R", sep = "/"))

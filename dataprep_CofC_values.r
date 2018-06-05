@@ -1,7 +1,12 @@
-library(xlsx)
-library(RSQLite)
-library(tidyr)
-library(data.table)
+if (!requireNamespace("xlsx", quietly=TRUE)) install.packages("xlsx")
+require(xlsx)
+if (!requireNamespace("RSQLite", quietly=TRUE)) install.packages("RSQLite")
+require(RSQLite)
+if (!requireNamespace("tidyr", quietly=TRUE)) install.packages("tidyr")
+require(tidyr)
+if (!requireNamespace("data.table", quietly=TRUE)) install.packages("data.table")
+require(data.table)
+
 
 loc_scripts <- "E:/pcpp/PCPP"
 source(paste(loc_scripts, "0_PathsAndSettings.R", sep = "/"))
