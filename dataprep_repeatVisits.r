@@ -1,8 +1,7 @@
 # code to get a count of the repeat visits to particular EOs/SFs
-
 library(plyr)
 
-loc_scripts <- "P:/Conservation Programs/Natural Heritage Program/Projects/Active projects/1495 DCNR Plant Conservation Plan/Project Materials and Data/data"
+loc_scripts <- "E:/pcpp/PCPP"
 source(paste(loc_scripts, "0_PathsAndSettings.R", sep = "/"))
 setwd(working_directory)
 

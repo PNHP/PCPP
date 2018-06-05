@@ -4,6 +4,10 @@ library(rgdal)
 library(rgeos)
 arc.check_product()
 
+loc_scripts <- "E:/pcpp/PCPP"
+source(paste(loc_scripts, "0_PathsAndSettings.R", sep = "/"))
+setwd(working_directory)
+
 # arc geodatabase directory
 loc_eo <- "W:/Heritage/Heritage_Data/Biotics_datasets.gdb"
 

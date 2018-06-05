@@ -2,7 +2,7 @@
 #   run. The goal is to avoid redundancy and improve consistency among scripts.
 
 # Set input paths ----
-working_directory <- "P:/Conservation Programs/Natural Heritage Program/Projects/Active projects/1495 DCNR Plant Conservation Plan/Project Materials and Data/data"
+working_directory <- "E:/pcpp/PCPP"
 databasename <- "PlantConservationPlan.sqlite"
 graphics_path <- "images/"
 
