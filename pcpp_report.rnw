@@ -1,0 +1,213 @@
+\documentclass{article}
+\usepackage{geometry}
+\usepackage{fancyhdr}     %for headers,footers
+\usepackage{underscore}  %needed if any text has underscores
+\usepackage[T1]{fontenc} 
+\usepackage[default]{gillius}
+\usepackage[utf8]{inputenc} 
+\usepackage{lmodern}
+\usepackage{newunicodechar}
+\newunicodechar{ﬁ}{fi}
+\newunicodechar{ﬀ}{ff}
+\usepackage[singlelinecheck=false, justification=raggedright]{caption}
+\usepackage{longtable}
+\usepackage[para]{threeparttablex}
+\usepackage{multicol}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{float}
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+\usepackage{colortbl, xcolor}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{blindtext}
+
+\title{Pennsylvania Plant Conservation Plan}
+\date{2018\\ May}
+\author{Christopher Tracey 
+\and Molly Moore}
+
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}
+
+\geometry{letterpaper, portrait, top=0.45in, bottom=0.75in, left=0.5in, right=0.5in}
+\pagestyle{fancy} \fancyhf{} \renewcommand\headrulewidth{0pt} %strip default header/footer stuff
+
+
+%add footers
+\cfoot{
+  \small   %small font. The double slashes is newline in fancyhdr
+   Pennsylvania Conservation Prioritorization Plan
+}
+\rfoot{page \thepage}
+\begin{document}
+\maketitle
+
+
+\newpage
+%Pennsylvania Plant Conservation Prioritorization Plan
+
+%Pennsylvania Natural Heritage Program
+%800 Waterfront Drive
+%Pittsburgh, PA 15206
+
+%This document should be cited as:
+%\pagebreak
+
+
+\tableofcontents
+\newpage
+
+\section{Project Goal}
+\noindent\normalsize
+\blindtext
+\section{Introduction}
+\noindent\normalsize
+Two questions of conservation planning:
+\begin{enumerate}
+ \item Where conservation areas should be located? (systematic/spatial)
+ \item What actions should be undertaken to manage them? (strategic)
+\end{enumerate}
+
+What data gaps exist for plants in Pennsylvania?
+
+\subsection{State of Knowledge of the Pennsylvania Flora}
+
+Floras\\
+The most recent statewide flora is the "The Plants of Pennsylvania" (Ann Fowler Rhoads and Timothy A. Block. 2007).\\
+Vascular Flora of Pennsylvania: Annotated Checklist and Atlas\\
+"Flora of Pennsylvania" by Thomas Conrad Porter\\
+
+
+\section{Species Prioritorization}
+\noindent\normalsize
+Two Outcomes
+Provide prioritization beyond G/S-ranks
+Setting the targets for this project
+Minimum set is “all tracked and watchlist plants”
+
+Framework could be expandable to all native plant species.
+
+\subsection{Species Ranks}
+<<label=longtable, echo=FALSE, results='asis'>>=
+cat('\\begin{longtable}{p{0.5in}C{0.35in}C{0.35in}C{0.35in}C{0.35in}C{0.35in}C{0.35in}C{0.35in}C{0.35in}C{0.35in}C{0.35in}}\n')
+cat('\\toprule\n')
+#cat('SGCN Name & SGCN Season \\\\ \n')
+cat('\\rowcolor[gray]{.85}{rank}&{S1}&{S2}&{S3}&{S4}&{S5}&{SH}&{SNA}&{SNR}&{SU}&{SX} \\\\ \n')
+cat('\\midrule\n')
+cat('\\endhead\n')
+#cat(paste0('one','&','teo \\\\ \n'))
+for(i in 1:nrow(gs_matrix)){
+  cat(paste0('\\hspace{2mm}',gs_matrix$rank[i],'&',gs_matrix$S1[i],'&',gs_matrix$S2[i],'&',gs_matrix$S3[i],'&',gs_matrix$S4[i],'&',gs_matrix$S5[i],'&',gs_matrix$SH[i],'&',gs_matrix$SNA[i],'&', gs_matrix$SNR[i],'&',gs_matrix$SU[i],'&',gs_matrix$SX[i], '\\\\ \n'))
+}
+cat('\\bottomrule\n')
+cat('\\end{longtable}\n')
+@
+
+\Sexpr{length(which(et_plants$Rounded.G.RANK=="G1"|et_plants$Rounded.G.RANK=="T1"|et_plants$Rounded.G.RANK=="G2"|et_plants$Rounded.G.RANK=="T2"))} species are ranked critically imperiled (G1/T1) or imperiled (G2/T2) on a global level. Another \Sexpr{length(which(et_plants$Rounded.G.RANK=="G3"|et_plants$Rounded.G.RANK=="T3"))} species are vulnerable to extinction (G3/T3).
+\\
+number of endemics/near-endemics to Pennsylvania? 
+\\
+\subsubsection{IUCN Redlist}
+
+A query (5/29/2018) of the IUCN Redlist (http://www.iucnredlist.org) yielded \Sexpr{nrow(dataRedlist)} species in Pennsylvania. However, upon further analysis only \Sexpr{length(which(dataRedlist$PA_present==1))} species (\Sexpr{as.integer( (length(which(dataRedlist$PA_present==1))/nrow(dataRedlist))*100 ) }\%) on the Redlist are present in Pennsylvania. The reason for this difference is due to distribution coding by the IUCN.  The following table present Red List data for the \Sexpr{length(which((dataRedlist$PA_present==1)&(dataRedlist$Red.List.status=="CR"|dataRedlist$Red.List.status=="EN"|dataRedlist$Red.List.status=="NT")))} species that are considered CR, EN, or NT. \\
+
+<<label=redlist_subset, echo=FALSE, results='asis'>>=
+dataRedlist_sub <- dataRedlist[which((dataRedlist$PA_present==1)&(dataRedlist$Red.List.status=="CR"|dataRedlist$Red.List.status=="EN"|dataRedlist$Red.List.status=="NT")),]
+dataRedlist_sub <- dataRedlist_sub[order(dataRedlist_sub$Red.List.status),]
+cat('\\begin{longtable}{p{1.5in}C{0.65in}C{0.65in}C{0.65in}}\n')
+cat('\\toprule\n')
+#cat('SGCN Name & SGCN Season \\\\ \n')
+cat('\\rowcolor[gray]{.85}{SNAME}&{Redlist Status}&{Redlist Criteria}&{Trend} \\\\ \n')
+cat('\\midrule\n')
+cat('\\endhead\n')
+for(i in 1:nrow(dataRedlist_sub)){
+  cat(paste0('\\hspace{2mm}\\textit{',dataRedlist_sub$SNAME[i],'}&',dataRedlist_sub$Red.List.status[i],'&',dataRedlist_sub$Red.List.criteria[i],'&',dataRedlist_sub$Population.trend[i], '\\\\ \n'))
+}
+cat('\\bottomrule\n')
+cat('\\end{longtable}\n')
+@
+Cite:IUCN 2014. IUCN Red List of Threatened Species. Version 2014.2. <www.iucnredlist.org>. Downloaded on 6 November 2014.\\
+
+Are there any species that we could consider as responsibilty species? Previous work by the VPTC 
+
+\subsection{Methods}
+\noindent\normalsize
+In order to make this project as repeatable and updatable as possible, we developed scripts that drove the analysis. Code is hosted on the PNHP GitHib (https://github.com/PNHP/PCPP).
+\subsubsection{Project Area}
+The project area is the state of Pennsylvania. Pennsylvania has an area of 119,283 km\textsuperscript{2}--of this 116,075 km\textsuperscript{2} are land, 1,269 km\textsuperscript{2} are inland waters, and 1,940 km\textsuperscript{2} are waters in Lake Erie. It is bordered by New York to the North, Ontario (Canada) to the Northwest, Ohio to the West, Maryland to the South, Delaware to the Southeast, West Virginia to the Southwest, and New Jersey to the East.
+
+\subsubsection{Species List}
+For this project, the we worked with all tracked and watchlist plants. We worked with the PNHP botanists to confirm the species on the list.\\
+
+The complete list of species is presented in Appendix A.
+
+\subsection{Results}
+\noindent\normalsize
+Placeholder text
+\subsection{Conclusions}
+\noindent\normalsize
+The results of the priority setting provides the targets for the spatial part of this project.
+
+\subsubsection{Responsibility Species}
+A Pennsylvania-responsibility species (the term may also refer to subspecies or varieties) is one for which Pennsylvania plays a key role in sustaining its global security by hosting at least 10\% of its North American population or encompassing at least 25\% of its North American range. (PABS http://www.pabiologicalsurvey.org/pennsylvania-responsibility.html)
+
+\section{Spatial Prioritorization}
+\noindent\normalsize
+We can’t work everywhere
+Institutional knowledge and potential biases
+Some spatial prioritization exists in the form of the NHAs and the previous B-ranks 
+
+Principles of Spatial Conservation Planning
+\begin{itemize}
+\item Efficiency – compactness and spatial arrangement
+\item Flexibility – alternative solutions
+\item Complementarity – the gain in diversity achieved when adding that site to a set of other sites
+\item Irreplaceability – (selection frequency)
+\end{itemize}
+
+\subsection{Methods}
+\noindent\normalsize
+\blindtext
+
+\subsection{Results}
+\noindent\normalsize
+Placeholder text
+\subsection{Conclusions}
+\noindent\normalsize
+\blindtext
+
+\section{Putting this Plan Into Practice}
+Highlight broad scale patterns of plant distribution and targeted areas\\
+Can focus on protection, management, and other issues
+\subsection{Policy guidance}
+\blindtext
+\subsection{In situ conservation at habitat level}
+\blindtext
+\subsection{In situ conservation at species/population level}
+\blindtext
+\subsection{Species reintroduction programs}
+Species reintroduction is the deliberate release of a species into the wild, from captivity or other areas where the organism is capable of survival. Species that may be eligible for reintroduction are typically threatened or endangered in the wild. 
+\subsection{Ex situ conservation}
+It is the process of protecting an endangered species, variety or breed, of plant or animal outside its natural habitat.
+\subsubsection{Ancillary botanic gardens}
+\blindtext
+\subsection{Community and Participatory Approaches}
+\blindtext
+\subsection{Habitat Restoration}
+Habitat restoration is the practice of renewing and restoring degraded, damaged, or destroyed ecosystems and habitats in the environment by active human intervention and action.
+\subsection{Land Protection}
+\blindtext
+\subsubsection{Natural Heritage Areas (NHAs)}
+\noindent\normalsize
+NHAs are sites, which means that they can have a boundary that exists on a map. NHAs can serve as a finer filter.
+
+\section{Overall Conclusions and recommendations}
+Dummy text
+\blindtext
+
+\section{Acknowledgements}
+We would like to thank the following people for their input on the development of this project:
+
+
+\end{document}
