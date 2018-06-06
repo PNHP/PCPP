@@ -10,7 +10,7 @@ setwd(working_directory)
 ############## develop datasets ##########################
 
 # table of g-s ranks
-source("ET_processor.R")
+source("dataprep_ET_processor.R")
 
 # IUCN redlist
 db <- dbConnect(SQLite(), dbname = databasename)
@@ -19,10 +19,11 @@ dataRedlist <- dbGetQuery(db, statement = SQLquery_IUCN )
 #dataRedlist_sub <- dataRedlist[which(dataRedlist=="CR"|dataRedlist=="EN"|dataRedlist=="NT"),]
 
 ##############  report generation  #######################
+setwd(output_directory)
 print("Generating the PDF report...") # report out to ArcGIS
 daytime <-gsub("[^0-9]", "", Sys.time() )    # makes a report time variable
 #knit2pdf(paste(working_directory,"pcpp_report.rnw",sep="/"), output=paste("pcppReport",daytime, ".tex",sep=""))   #write the pdf
-knit("pcpp_report.rnw", output=paste("pcppReport",daytime, ".tex",sep=""))
+knit("../pcpp_report.rnw", output=paste("pcppReport",daytime, ".tex",sep=""))
 call <- paste0("pdflatex -halt-on-error -interaction=nonstopmode ","pcppReport",daytime,".tex")
 system(call)
 system(call) # 2nd run to apply citation numbers
@@ -39,3 +40,5 @@ for(i in 1:NROW(fn_ext)){
 # create and open the pdf
 #pdf.path <- paste(working_directory, paste("pcppReport_",daytime,".pdf",sep=""), sep="/")
 #system(paste0('open "', pdf.path, '"'))
+
+setwd(working_directory)

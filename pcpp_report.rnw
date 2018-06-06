@@ -21,6 +21,9 @@
 \usepackage{booktabs}
 \usepackage{enumitem}
 \usepackage{blindtext}
+\usepackage{hyperref}
+\urlstyle{same}
+
 
 \title{Pennsylvania Plant Conservation Plan}
 \date{2018\\ May}
@@ -78,6 +81,20 @@ The most recent statewide flora is the "The Plants of Pennsylvania" (Ann Fowler 
 Vascular Flora of Pennsylvania: Annotated Checklist and Atlas\\
 "Flora of Pennsylvania" by Thomas Conrad Porter\\
 
+For this project we developed a species list based the PNHP "element tracking" list. We further edited this list to remove subspecies and varieties (further details are present in Appendix X.\\ As of this writing there are \Sexpr{nrow(data_ET_native)} native taxa present in Pennsylvania (PNHP). This includes \Sexpr{cnt_subspecies} subspecies, \Sexpr{cnt_varieties} varieties, and \Sexpr{cnt_hybrids} hybrids. The ten largest plant families in Pennsylvania are presented in Table X.
+<<label=plantfamily, echo=FALSE, results='asis'>>=
+family_X_spp <- family_X_spp[1:10,]
+cat('\\begin{longtable}{p{2.5in}C{0.5in}}\n')
+cat('\\toprule\n')
+cat('\\rowcolor[gray]{.85}{Family}&{Count} \\\\ \n')
+cat('\\midrule\n')
+cat('\\endhead\n')
+for(i in 1:nrow(family_X_spp)){
+  cat(paste0('\\hspace{2mm}',family_X_spp$Family[i],'&',family_X_spp$Freq[i],'\\\\ \n'))
+}
+cat('\\bottomrule\n')
+cat('\\end{longtable}\n')
+@
 
 \section{Species Prioritorization}
 \noindent\normalsize
@@ -85,12 +102,23 @@ Two Outcomes
 Provide prioritization beyond G/S-ranks
 Setting the targets for this project
 Minimum set is “all tracked and watchlist plants”
-
+\noindent\normalsize
 Framework could be expandable to all native plant species.
 
 \subsection{Species Ranks}
+
+Species Global Conservation Status Definitions of NatureServe and the Pennsylvania Natural Heritage Program. For additional information see  url{http://www.natureserve.org/explorer/ranking.htm}.
+\begin{itemize}
+  \item G1 Critically Imperiled: At very high risk of extinction due to extreme rarity (often 5 or fewer populations), very steep declines, or other factors.
+  \item G2 Imperiled: At high risk of extinction due to very restricted range, very few populations (often 20 or fewer populations), steep declines, or other factors.
+  \item G3 Vulnerable: At moderate risk of extinction or extirpation due to a restricted range, relatively few populations (often 80 or fewer populations), recent and widespread declines, or other factors.
+  \item G4 Apparently Secure: Uncommon but not rare; some cause for long-term concern due to declines.
+  \item G5 Secure: Common; widespread and abundant.
+\end{itemize}
+Other factors considered in ranking species include: number of individuals, occupied habitat, trends, threats, and level of protection.
+
 <<label=longtable, echo=FALSE, results='asis'>>=
-cat('\\begin{longtable}{p{0.5in}C{0.35in}C{0.35in}C{0.35in}C{0.35in}C{0.35in}C{0.35in}C{0.35in}C{0.35in}C{0.35in}C{0.35in}}\n')
+cat('\\begin{longtable}{p{0.9in}C{0.35in}C{0.35in}C{0.35in}C{0.35in}C{0.35in}C{0.35in}C{0.35in}C{0.35in}C{0.35in}C{0.35in}}\n')
 cat('\\toprule\n')
 #cat('SGCN Name & SGCN Season \\\\ \n')
 cat('\\rowcolor[gray]{.85}{rank}&{S1}&{S2}&{S3}&{S4}&{S5}&{SH}&{SNA}&{SNR}&{SU}&{SX} \\\\ \n')
@@ -104,13 +132,16 @@ cat('\\bottomrule\n')
 cat('\\end{longtable}\n')
 @
 
-\Sexpr{length(which(et_plants$Rounded.G.RANK=="G1"|et_plants$Rounded.G.RANK=="T1"|et_plants$Rounded.G.RANK=="G2"|et_plants$Rounded.G.RANK=="T2"))} species are ranked critically imperiled (G1/T1) or imperiled (G2/T2) on a global level. Another \Sexpr{length(which(et_plants$Rounded.G.RANK=="G3"|et_plants$Rounded.G.RANK=="T3"))} species are vulnerable to extinction (G3/T3).
+\Sexpr{length(which(et_plants$GRANK_rounded=="G1"|et_plants$GRANK_rounded=="T1"|et_plants$GRANK_rounded=="G2"|et_plants$GRANK_rounded=="T2"))} species are ranked critically imperiled (G1/T1) or imperiled (G2/T2) on a global level. Another \Sexpr{length(which(et_plants$GRANK_rounded=="G3"|et_plants$GRANK_rounded=="T3"))} species are vulnerable to extinction (G3/T3).
+\\
+\noindent\normalsize
+X species in Pennsylvania are considered extirpated in the state.
 \\
 number of endemics/near-endemics to Pennsylvania? 
 \\
 \subsubsection{IUCN Redlist}
 
-A query (5/29/2018) of the IUCN Redlist (http://www.iucnredlist.org) yielded \Sexpr{nrow(dataRedlist)} species in Pennsylvania. However, upon further analysis only \Sexpr{length(which(dataRedlist$PA_present==1))} species (\Sexpr{as.integer( (length(which(dataRedlist$PA_present==1))/nrow(dataRedlist))*100 ) }\%) on the Redlist are present in Pennsylvania. The reason for this difference is due to distribution coding by the IUCN.  The following table present Red List data for the \Sexpr{length(which((dataRedlist$PA_present==1)&(dataRedlist$Red.List.status=="CR"|dataRedlist$Red.List.status=="EN"|dataRedlist$Red.List.status=="NT")))} species that are considered CR, EN, or NT. \\
+A query (5/29/2018) of the IUCN Redlist (\url{http://www.iucnredlist.org}) yielded \Sexpr{nrow(dataRedlist)} species in Pennsylvania. However, upon further analysis only \Sexpr{length(which(dataRedlist$PA_present==1))} species (\Sexpr{as.integer( (length(which(dataRedlist$PA_present==1))/nrow(dataRedlist))*100 ) }\%) on the Redlist are present in Pennsylvania. The reason for this difference is due to distribution coding by the IUCN.  The following table present Red List data for the \Sexpr{length(which((dataRedlist$PA_present==1)&(dataRedlist$Red.List.status=="CR"|dataRedlist$Red.List.status=="EN"|dataRedlist$Red.List.status=="NT")))} species that are considered CR, EN, or NT. \\
 
 <<label=redlist_subset, echo=FALSE, results='asis'>>=
 dataRedlist_sub <- dataRedlist[which((dataRedlist$PA_present==1)&(dataRedlist$Red.List.status=="CR"|dataRedlist$Red.List.status=="EN"|dataRedlist$Red.List.status=="NT")),]
@@ -133,7 +164,7 @@ Are there any species that we could consider as responsibilty species? Previous 
 
 \subsection{Methods}
 \noindent\normalsize
-In order to make this project as repeatable and updatable as possible, we developed scripts that drove the analysis. Code is hosted on the PNHP GitHib (https://github.com/PNHP/PCPP).
+In order to make this project as repeatable and updatable as possible, we developed scripts that drove the analysis. Code is hosted on the PNHP GitHib (\url{https://github.com/PNHP/PCPP}).
 \subsubsection{Project Area}
 The project area is the state of Pennsylvania. Pennsylvania has an area of 119,283 km\textsuperscript{2}--of this 116,075 km\textsuperscript{2} are land, 1,269 km\textsuperscript{2} are inland waters, and 1,940 km\textsuperscript{2} are waters in Lake Erie. It is bordered by New York to the North, Ontario (Canada) to the Northwest, Ohio to the West, Maryland to the South, Delaware to the Southeast, West Virginia to the Southwest, and New Jersey to the East.
 
@@ -150,7 +181,19 @@ Placeholder text
 The results of the priority setting provides the targets for the spatial part of this project.
 
 \subsubsection{Responsibility Species}
-A Pennsylvania-responsibility species (the term may also refer to subspecies or varieties) is one for which Pennsylvania plays a key role in sustaining its global security by hosting at least 10\% of its North American population or encompassing at least 25\% of its North American range. (PABS http://www.pabiologicalsurvey.org/pennsylvania-responsibility.html)
+A Pennsylvania-responsibility species (the term may also refer to subspecies or varieties) is one for which Pennsylvania plays a key role in sustaining its global security by hosting at least 10\% of its North American population or encompassing at least 25\% of its North American range. (PABS \url{http://www.pabiologicalsurvey.org/pennsylvania-responsibility.html})
+
+\section{Threats}
+\noindent\normalsize
+--Stolen from PA Flora--\\
+The Pennsylvania flora includes 3,091 species of vascular plants. Sixty-nine percent of these are plant species that evolved in eastern North America along with other indigenous plants and animals. The remaining thirty-one percent consist of plants that evolved elsewhere and have been brought to Pennsylvania through the actions of humans.\\
+
+Plant introductions have been both deliberate and accidental. Many cultivated plants were brought by the earliest European settlers. Most of our agricultural crops and ornamental garden plants originated in other parts of the world and humankind's search for useful plants is an ongoing process. Accidental introductions also have a long history and continue to occur as, for example, seeds and other propagules "hitch a ride" in the ballast water of ships, airplane cargo holds, or on people's shoes.\\
+
+While many introduced plants have remained confined to cultivated fields and gardens, others have spread unchecked into the surrounding landscape. For instance, purple loosestrife (\textit{Lythrum salicaria}), a plant from Europe, has been able to dominate wetland habitats. Further sources of information on invasive plants of our region include: Invasive Plants of the Eastern U.S., Mid-Atlantic Invasive Plant Council, and the Invasive Plant Atlas of the United States.\\
+
+In Pennsylvania and other mid-Atlantic states, problems caused by invasive, non-native plants have been exacerbated by deer overabundance. White-tailed deer evolved in eastern North America along with the local flora, thus they recognize native plants as suitable food. These large herbivores do not eat most non-native plants as long as native species are available. This results in the proliferation of non-native species in heavily browsed landscapes and has led to the complete dominance of the forest floor by Japanese stiltgrass (\textit{Microstegium vimineum}) or garlic mustard (\textit{Alliaria petiolata}). A variety of cascading effects on ecosystem function brought about by invasive, non-native plants have been documented.\\
+
 
 \section{Spatial Prioritorization}
 \noindent\normalsize

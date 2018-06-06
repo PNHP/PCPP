@@ -4,6 +4,8 @@ if (!requireNamespace("RSQLite", quietly=TRUE)) install.packages("RSQLite")
 require(RSQLite)
 if (!requireNamespace("data.table", quietly=TRUE)) install.packages("data.table")
 require(data.table)
+if (!requireNamespace("arcgisbinding", quietly=TRUE)) install.packages("arcgisbinding")
+require(arcgisbinding)
 
 loc_scripts <- "E:/pcpp/PCPP"
 source(paste(loc_scripts, "0_PathsAndSettings.R", sep = "/"))
@@ -33,7 +35,7 @@ et_plants <- merge(x=et_plants, y=rounded_grank, by="G.RANK", all.x=TRUE)
 et_plants <- merge(x=et_plants, y=rounded_srank, by="S.RANK", all.x=TRUE)
 rounded_grank <- NULL
 rounded_srank <- NULL
- 
+
 # The following section identifies which species and subspecific taxa are present in the state and subsets the list to be just those
 # find potential overlapping taxa due to subspecies/variabties
 specname <- as.character(et_plants$SCIENTIFIC.NAME)
@@ -46,8 +48,6 @@ spec_dup <- unique(spec_dup)
 spec_sspvar <- specname[specname %like% " var. "|specname %like% " ssp. " ]
 
 # sees what records we have in Biotics
-if (!requireNamespace("arcgisbinding", quietly=TRUE)) install.packages("arcgisbinding")
-require(arcgisbinding)
 arc.check_product()
 eo_ptreps <- paste(loc_eo,"eo_ptreps",sep="/") ## EO point reps to get a list of species we have records for in biotics
 eo_ptreps <- arc.open(eo_ptreps)
@@ -61,12 +61,9 @@ et_plants$temp_taxostatus[et_plants$SCIENTIFIC.NAME %in% biotics_records$SNAME] 
 
 # find the species that are not in biotics, but they have a subsp or variety
 spec_sspvar_noBiotics <- et_plants$SCIENTIFIC.NAME[((et_plants$SCIENTIFIC.NAME %like% " var. "|et_plants$SCIENTIFIC.NAME %like% " ssp. ") & is.na(et_plants$temp_taxostatus) & (et_plants$TRACKING.STATUS!="Y"|et_plants$TRACKING.STATUS!="W") ) ]
-
 only_subspecific_taxa <- spec_sspvar_noBiotics[!(sub("^(.*? .*?) .*", "\\1", spec_sspvar_noBiotics) %in% et_plants$SCIENTIFIC.NAME )]
-
 spec_sspvar_noBiotics <- setdiff(spec_sspvar_noBiotics, only_subspecific_taxa )
-
-spec_sspvar_noBiotics <- as.character(droplevels(spec_sspvar_noBiotics)) 
+spec_sspvar_noBiotics <- as.character(spec_sspvar_noBiotics) # droplevels 
 spec_sspvar_noBiotics <- na.omit(spec_sspvar_noBiotics)
 
 # if the species is in biotics label it as so
@@ -74,6 +71,22 @@ et_plants$temp_taxostatus[et_plants$SCIENTIFIC.NAME %in% spec_sspvar_noBiotics] 
 
 #subset out the duplicates and use this from now on!
 et_plants <- et_plants[et_plants$temp_taxostatus!="subspecific taxa, effective duplicate",]
+
+# rename columns to standard biotic names
+names(et_plants)[names(et_plants)=="S.RANK"] <- "SRANK"
+names(et_plants)[names(et_plants)=="G.RANK"] <- "GRANK"
+names(et_plants)[names(et_plants)=="SCIENTIFIC.NAME"] <- "SNAME"
+names(et_plants)[names(et_plants)=="COMMON.NAME"] <- "SCOMNAME"
+names(et_plants)[names(et_plants)=="PBS.QUALIFIER"] <- "PBSQUAL"
+names(et_plants)[names(et_plants)=="SENSITIVE.SPECIES"] <- "SENSITV_SP"
+names(et_plants)[names(et_plants)=="ELEMENT.SUBNATIONAL.ID"] <- "ELSUBID"
+names(et_plants)[names(et_plants)=="PBS.STATUS"] <- "PBSSTATUS"
+names(et_plants)[names(et_plants)=="PA.FED.STATUS"] <- "USESA"
+names(et_plants)[names(et_plants)=="Rounded.S.RANK"] <- "SRANK_rounded"
+names(et_plants)[names(et_plants)=="Rounded.G.RANK"] <- "GRANK_rounded"
+
+
+
 
 
 #####################################
@@ -88,7 +101,4 @@ dbWriteTable(db, "et_plants",et_plants, overwrite=TRUE)
 dbWriteTable(db, "taxo", taxo, overwrite=TRUE)
 dbDisconnect(db)
 
-# create a table of granks by sranks
-gs_matrix <- as.data.frame.matrix(table(et_plants$Rounded.G.RANK,et_plants$Rounded.S.RANK))
-gs_matrix <- cbind(rownames(gs_matrix), gs_matrix)
-colnames(gs_matrix)[1] <- "rank"
+
