@@ -18,7 +18,7 @@ et_file <- "2018-03-29 complete EST.xlsx"
 # name tof the sheet that the ET is on
 et_sheet <- "Query Output"
 
-et <- read.xlsx(paste(et_path, et_file, sep="/"), sheetName=et_sheet)
+et <- read.xlsx(paste(et_path, et_file, sep="/"), sheetName=et_sheet,stringsAsFactors=FALSE )
 
 # subset to vascular and nonvascular plants
 et_plants <- et[(substr(et$ELCODE,1,1)=="P")|(substr(et$ELCODE,1,1)=="N"), ]
@@ -45,7 +45,7 @@ spec_dup <- spec_dup[!grepl(" x", spec_dup)] #get rid of hybrids
 spec_dup <- sort(spec_dup)
 spec_dup <- unique(spec_dup)
 
-spec_sspvar <- specname[specname %like% " var. "|specname %like% " ssp. " ]
+spec_sspvar <- specname[specname %like% " var. "|specname %like% " ssp. " ] ### what does this do?
 
 # sees what records we have in Biotics
 arc.check_product()
@@ -66,11 +66,11 @@ spec_sspvar_noBiotics <- setdiff(spec_sspvar_noBiotics, only_subspecific_taxa )
 spec_sspvar_noBiotics <- as.character(spec_sspvar_noBiotics) # droplevels 
 spec_sspvar_noBiotics <- na.omit(spec_sspvar_noBiotics)
 
-# if the species is in biotics label it as so
+# if the species is 
 et_plants$temp_taxostatus[et_plants$SCIENTIFIC.NAME %in% spec_sspvar_noBiotics] <- "subspecific taxa, effective duplicate"
 
 #subset out the duplicates and use this from now on!
-et_plants <- et_plants[et_plants$temp_taxostatus!="subspecific taxa, effective duplicate",]
+et_plants <- et_plants[which(et_plants$temp_taxostatus!="subspecific taxa, effective duplicate"|is.na(et_plants$temp_taxostatus)),]
 
 # rename columns to standard biotic names
 names(et_plants)[names(et_plants)=="S.RANK"] <- "SRANK"
@@ -84,10 +84,6 @@ names(et_plants)[names(et_plants)=="PBS.STATUS"] <- "PBSSTATUS"
 names(et_plants)[names(et_plants)=="PA.FED.STATUS"] <- "USESA"
 names(et_plants)[names(et_plants)=="Rounded.S.RANK"] <- "SRANK_rounded"
 names(et_plants)[names(et_plants)=="Rounded.G.RANK"] <- "GRANK_rounded"
-
-
-
-
 
 #####################################
 #get taxonomic information

@@ -9,14 +9,15 @@ setwd(working_directory)
 
 ############## develop datasets ##########################
 
-# table of g-s ranks
-source("dataprep_ET_processor.R")
 
 # IUCN redlist
 db <- dbConnect(SQLite(), dbname = databasename)
-SQLquery_IUCN <- paste("SELECT SNAME, `Red.List.status`, `Red.List.criteria`, `Population.trend`, PA_present"," FROM redlist ")
+SQLquery_IUCN <- paste("SELECT SNAME, `Red.List.status`, `Red.List.criteria`, `Population.trend`, PA_present","FROM redlist")
 dataRedlist <- dbGetQuery(db, statement = SQLquery_IUCN )
 #dataRedlist_sub <- dataRedlist[which(dataRedlist=="CR"|dataRedlist=="EN"|dataRedlist=="NT"),]
+dbDisconnect(db)
+
+
 
 ##############  report generation  #######################
 setwd(output_directory)
