@@ -9,14 +9,19 @@ setwd(working_directory)
 
 ############## develop datasets ##########################
 
-
-# IUCN redlist
 db <- dbConnect(SQLite(), dbname = databasename)
+# IUCN redlist
 SQLquery_IUCN <- paste("SELECT SNAME, `Red.List.status`, `Red.List.criteria`, `Population.trend`, PA_present","FROM redlist")
 dataRedlist <- dbGetQuery(db, statement = SQLquery_IUCN )
-#dataRedlist_sub <- dataRedlist[which(dataRedlist=="CR"|dataRedlist=="EN"|dataRedlist=="NT"),]
-dbDisconnect(db)
+# CCVI
+SQLquery_ccvi <- paste("SELECT SNAME, score","FROM ccvi ")
+data_ccvi <- dbGetQuery(db, statement = SQLquery_ccvi )
+# IndexHerb
+SQLquery_IndexHerb <- paste("SELECT NamOrganisation, NamOrganisationAcronym, IhhTotals ","FROM IndexHerb ")
+data_IndexHerb <- dbGetQuery(db, statement = SQLquery_IndexHerb )
 
+
+dbDisconnect(db)
 
 
 ##############  report generation  #######################
@@ -37,9 +42,11 @@ for(i in 1:NROW(fn_ext)){
     file.remove(fn)
   }
 }
+setwd(working_directory)
+
 
 # create and open the pdf
 #pdf.path <- paste(working_directory, paste("pcppReport_",daytime,".pdf",sep=""), sep="/")
 #system(paste0('open "', pdf.path, '"'))
 
-setwd(working_directory)
+
