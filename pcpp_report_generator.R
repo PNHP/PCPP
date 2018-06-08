@@ -19,7 +19,11 @@ data_ccvi <- dbGetQuery(db, statement = SQLquery_ccvi )
 # IndexHerb
 SQLquery_IndexHerb <- paste("SELECT NamOrganisation, NamOrganisationAcronym, IhhTotals ","FROM IndexHerb ")
 data_IndexHerb <- dbGetQuery(db, statement = SQLquery_IndexHerb )
-
+# acknowledgements
+SQLquery_acknowledgements <- paste("SELECT firstname, lastname ","FROM acknowledgements ")
+data_acknowledgements <- dbGetQuery(db, statement = SQLquery_acknowledgements )
+data_acknowledgements$name <- paste(data_acknowledgements$firstname,data_acknowledgements$lastname,sep=" ")
+data_acknowledgements <- paste(data_acknowledgements$name, collapse=", ") 
 
 dbDisconnect(db)
 

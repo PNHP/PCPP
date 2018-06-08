@@ -9,8 +9,6 @@ require(rgeos)
 if (!requireNamespace("beanplot", quietly=TRUE)) install.packages("beanplot")
 require(beanplot)
 
-
-
 arc.check_product()
 
 loc_scripts <- "E:/pcpp/PCPP"
