@@ -10,7 +10,7 @@ loc_eo <- "W:/Heritage/Heritage_Data/Biotics_datasets.gdb"  # arc geodatabase di
 
 # set options   
 options(useFancyQuotes = FALSE)
-
+options(scipen=999)
 # Latex Formating Variables  ##  not sure if this is needed anymore.
 
 # functions

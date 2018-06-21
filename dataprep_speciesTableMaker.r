@@ -5,9 +5,11 @@ loc_scripts <- "E:/pcpp/PCPP"
 source(paste(loc_scripts, "0_PathsAndSettings.R", sep = "/"))
 setwd(working_directory)
 
-db <- dbConnect(SQLite(), dbname = databasename)
-SQLquery_ET <- paste("SELECT SNAME, SCOMNAME, ELCODE, ELSUBID, GRANK, SRANK, GRANK_rounded, SRANK_rounded, temp_taxostatus"," FROM et_plants")
-data_ET <- dbGetQuery(db, statement = SQLquery_ET )
+#db <- dbConnect(SQLite(), dbname = databasename)
+#SQLquery_ET <- paste("SELECT SNAME, SCOMNAME, ELCODE, ELSUBID, GRANK, SRANK, GRANK_rounded, SRANK_rounded, temp_taxostatus"," FROM et_plants")
+#data_ET <- dbGetQuery(db, statement = SQLquery_ET )
+
+# data ET comes in from the sql query in pcpp_report_generator.R
 
 SQLquery_taxonomy <- paste("SELECT ELEMENT_SUBNATIONAL_ID, ELCODE, CLASS, TAX_ORDER, FAMILY, GLOBAL_NAME, GLOBAL_COMNAME, PA_NAME, PA_COMNAME, CLASSIFICATION_COM, ORIGIN, REGULARITY, DIST_CONFIDENCE, CURR_PRESENCE_ABSENCE" , " FROM taxo")
 data_taxonomy <- dbGetQuery(db, statement = SQLquery_taxonomy )
