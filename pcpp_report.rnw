@@ -1,4 +1,5 @@
-\documentclass{article}
+\documentclass{report}
+\newenvironment{knitrout}
 \usepackage{geometry}
 \usepackage{fancyhdr}     %for headers,footers
 \usepackage{underscore}  %needed if any text has underscores
@@ -10,20 +11,26 @@
 \newunicodechar{ﬁ}{fi}
 \newunicodechar{ﬀ}{ff}
 \usepackage[singlelinecheck=false, justification=raggedright]{caption}
+\usepackage{graphicx}
+\graphicspath{ {E:/pcpp/PCPP/output/images/} }
 \usepackage{longtable}
 \usepackage[para]{threeparttablex}
 \usepackage{multicol}
 \usepackage{array}
 \usepackage{multirow}
+\usepackage{cite}
+\usepackage[nottoc]{tocbibind}
 \usepackage{float}
+\usepackage[skip=0.0\baselineskip,font=small]{caption}
 \usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
 \usepackage{colortbl, xcolor}
+\usepackage{wrapfig}
 \usepackage{booktabs}
 \usepackage{enumitem}
+\setlist{nolistsep,leftmargin=*}
 \usepackage{blindtext}
 \usepackage{hyperref}
 \urlstyle{same}
-
 
 \title{Pennsylvania Plant Conservation Plan}
 \date{2018\\ May}
@@ -36,7 +43,6 @@
 \geometry{letterpaper, portrait, top=0.45in, bottom=0.75in, left=0.5in, right=0.5in}
 \pagestyle{fancy} \fancyhf{} \renewcommand\headrulewidth{0pt} %strip default header/footer stuff
 
-
 %add footers
 \cfoot{
   \small   %small font. The double slashes is newline in fancyhdr
@@ -46,24 +52,34 @@
 \begin{document}
 \maketitle
 
-
 \newpage
 %Pennsylvania Plant Conservation Prioritorization Plan
-
 %Pennsylvania Natural Heritage Program
 %800 Waterfront Drive
 %Pittsburgh, PA 15206
-
 %This document should be cited as:
 %\pagebreak
 
-
 \tableofcontents
 \newpage
-
-\section{Project Goal}
+\section{Project Overview}
 \noindent\normalsize
-\blindtext
+\begin{wrapfigure}{R}{3in}
+ \begin{center}
+   \setlength{\fboxsep}{0pt}%
+   \setlength{\fboxrule}{0.5pt}%
+   \fbox{\includegraphics[width=3in]{Marshalliagrandifolia.jpg}}
+   \vspace{-10pt}
+ %\includegraphics[width=3in]{Marshalliagrandifolia.jpg}
+ \end{center}
+ \caption{Monongahela Barbara's buttons (\textit{Marshallia grandifolia}), is a globally rare plant that reaches the northern limits of its range in southwestern Pennslyvania. (photo: Christopher Tracey/PNHP)} % better way to source photos: https://tex.stackexchange.com/questions/95029/add-source-to-figure-caption
+\end{wrapfigure}
+
+\noindent\normalsize
+\blindtext[3]
+Planning and then implementing conservation actions for one or more plant species, their habitats and the sites where they are found requires a detailed understanding of the threats and risks that they face. 
+
+\newpage
 \section{Introduction}
 \noindent\normalsize
 Two questions of conservation planning:
@@ -73,80 +89,159 @@ Two questions of conservation planning:
 \end{enumerate}
 
 What data gaps exist for plants in Pennsylvania?
+The taxonomic coverage of Pennsylvania is relatively good.  
 
 \subsection{State of Knowledge of the Pennsylvania Flora}
+Implementing conservation actions requires an in-depth understanding of the flora--not only its taxonomy and phylogenetics, but also its historical and current distribution in the region. All this data is essential for determining the degree of threat faced by each taxon and thus establishing priorities for conservation.  THe objective of this section is to review the current state of knowledge of the flora, and offers suggestions for improving and updating this knowledge.
+\noindent\normalsize
+According to a recent search of the "Index Herbariorum" there are \Sexpr{nrow(data_IndexHerb)} herbariums in Pennsylvania (CITE Thiers). Collection numbers (including beyond Pennsylvania) total more than \Sexpr{format(round(sum(data_IndexHerb$IhhTotals[!is.na(data_IndexHerb$IhhTotals)]),digits=-4), big.mark=",", scientific=FALSE)} specimans. This includes large institutions such as the Carnegie Museum of Natural History (CM) and the Academy of Natural Sciences (ANSP) in Philadelphia, as well as smaller collections in local colleges and universities (e.g. Slippery Rock University; SLRO). There are also other herbarium within the state that do are not listed in the Index Herbariorum (e.g. Tom Ridge Environmental Center) that help contribute to floristic knowledge in Pennsylvania. \\
+\noindent\normalsize
+Thiers, B. [continuously updated]. Index Herbariorum: A global directory of public herbaria and associated staff. New York Botanical Garden's Virtual Herbarium. http://sweetgum.nybg.org/science/ih/.\\
 
-Floras\\
-The most recent statewide flora is the "The Plants of Pennsylvania" (Ann Fowler Rhoads and Timothy A. Block. 2007).\\
-Vascular Flora of Pennsylvania: Annotated Checklist and Atlas\\
-"Flora of Pennsylvania" by Thomas Conrad Porter\\
+\subsubsection{State Floras}
+The most recent statewide flora is the "The Plants of Pennsylvania" (Ann Fowler  Rhoads and Timothy A. Block. 2007).\\
+- Vascular Flora of Pennsylvania: Annotated Checklist and Atlas\\
+- "Flora of Pennsylvania" by Thomas Conrad Porter
+\subsubsection{Regional Floras}
+- Manual of Vascular Plants of Northeastern United States and Adjacent Canada Subsequent Edition by Henry A. Gleason and Arthur Cronquist.\\
+- Flora of the Southern and Mid-Atlantic States
+by Alan S. Weakley. UNC Herbarium, North Carolina Botanical Garden, University of North Carolina at Chapel Hill
+\subsubsection{Plant Taxa for this Project}
+\par\noindent For this project we developed a species list based the PNHP "element tracking" list. We further edited this list to remove subspecies and varieties (further details are present in Appendix X.
 
-For this project we developed a species list based the PNHP "element tracking" list. We further edited this list to remove subspecies and varieties (further details are present in Appendix X.\\ As of this writing there are \Sexpr{nrow(data_ET_native)} native taxa present in Pennsylvania (PNHP). This includes \Sexpr{cnt_subspecies} subspecies, \Sexpr{cnt_varieties} varieties, and \Sexpr{cnt_hybrids} hybrids. The ten largest plant families in Pennsylvania are presented in Table X.
+\begin{wraptable}{R}{2.25in}
+ \begin{center}
 <<label=plantfamily, echo=FALSE, results='asis'>>=
 family_X_spp <- family_X_spp[1:10,]
-cat('\\begin{longtable}{p{2.5in}C{0.5in}}\n')
-cat('\\toprule\n')
-cat('\\rowcolor[gray]{.85}{Family}&{Count} \\\\ \n')
-cat('\\midrule\n')
-cat('\\endhead\n')
+cat('\\caption{The ten largest plant families in Pennsylvania.}\\label{table:kysymys}')
+cat('\\begin{tabular}{ccc}\\\\\\toprule')
+cat('\\small\\\\')
+cat('\\textbf{Family} & \\textbf{Count}\\\\\\midrule')
 for(i in 1:nrow(family_X_spp)){
-  cat(paste0('\\hspace{2mm}',family_X_spp$Family[i],'&',family_X_spp$Freq[i],'\\\\ \n'))
+  cat(paste0('\\hspace{1mm}',family_X_spp$Family[i],'&',family_X_spp$Freq[i],'\\\\ \n'))
 }
-cat('\\bottomrule\n')
-cat('\\end{longtable}\n')
+cat('\\bottomrule')
+cat('\\end{tabular}')
 @
+ \end{center}
+\end{wraptable}
 
+\noindent\normalsize As of this writing there are \Sexpr{format(nrow(data_ET_native),big.mark=",",scientific=FALSE)} native taxa present in Pennsylvania (PNHP). This includes \Sexpr{cnt_subspecies} subspecies, \Sexpr{cnt_varieties} varieties, and \Sexpr{cnt_hybrids} hybrids. The ten largest plant families in Pennsylvania are presented in Table \ref{table:kysymys}.\\
+\par\noindent
+There are \Sexpr{nrow(data_ET_exotic)} exotic species on the PNHP Element Tracking list.\\
+\par\noindent
+\blindtext
+
+\newpage
 \section{Species Prioritorization}
 \noindent\normalsize
 Two Outcomes
 Provide prioritization beyond G/S-ranks
 Setting the targets for this project
 Minimum set is “all tracked and watchlist plants”
+
 \noindent\normalsize
 Framework could be expandable to all native plant species.
 
 \subsection{Species Ranks}
 
-Species Global Conservation Status Definitions of NatureServe and the Pennsylvania Natural Heritage Program. For additional information see  url{http://www.natureserve.org/explorer/ranking.htm}.
-\begin{itemize}
-  \item G1 Critically Imperiled: At very high risk of extinction due to extreme rarity (often 5 or fewer populations), very steep declines, or other factors.
-  \item G2 Imperiled: At high risk of extinction due to very restricted range, very few populations (often 20 or fewer populations), steep declines, or other factors.
-  \item G3 Vulnerable: At moderate risk of extinction or extirpation due to a restricted range, relatively few populations (often 80 or fewer populations), recent and widespread declines, or other factors.
-  \item G4 Apparently Secure: Uncommon but not rare; some cause for long-term concern due to declines.
-  \item G5 Secure: Common; widespread and abundant.
-\end{itemize}
-Other factors considered in ranking species include: number of individuals, occupied habitat, trends, threats, and level of protection.
+How Many Plants are At Risk in Pennsylvania? 
+
+\textbf{Understanding Conservation Rank}\\\\
+Conservation status ranks are intended to indicate risk of elimination or extinction in the foreseeable future and are arranged along a simple numerical scale (1-5) with the lower numbers reflecting increasing rarity and risk. Conservation ranks also present geographic information about rarity. State ranks (S ranks) communicate the rarity of the species in the state; whereas global ranks (G ranks) communicate the rarity of the species throughout its range (although most species are far from being globally distributed). The rank of a species is determined through analyses of population number, size, viability, threats, and trends, among other factors. The final metric, a combination of the numeric index (1-5) and the geographic identifier (G or S), distills this large amount of information into a single metric. Thus, for a particular plant species that has a global rank of G1 and a state rank of S1, the species is not only rare and at risk of elimination from within Pennsylvania but also rare throughout its entire range and at risk of extinction. Similarly, a plant species with ranks of G5 and S5 relate that the plant is common in Pennsylvania and is demonstrably secure throughout the species’ global range. Rank status definitions are provided in Table \ref{table:rankdef}.\\
+
+\begin{longtable}{p{0.75in}p{5in}}\\
+ \caption{Species Global Conservation Status Definitions of NatureServe and the Pennsylvania Natural Heritage Program. For additional information see \url{http://www.natureserve.org/explorer/ranking.htm}.}\label{table:rankdef}
+ \small\\
+  \textbf{Ranks} & \textbf{Definition}\\ \midrule
+  \hspace{1mm} G1/S1 & Critically Imperiled: At very high risk of extinction due to extreme rarity (often 5 or fewer populations), very steep declines, or other factors. \\
+  \hspace{1mm} G2/S2 & Imperiled: At high risk of extinction due to very restricted range, very few populations (often 20 or fewer populations), steep declines, or other factors. \\
+  \hspace{1mm} G3/S3 & Vulnerable: At moderate risk of extinction or extirpation due to a restricted range, relatively few populations (often 80 or fewer populations), recent and widespread declines, or other factors. \\
+  \hspace{1mm} G4/S4 & Apparently Secure: Uncommon but not rare; some cause for long-term concern due to declines. \\
+  \hspace{1mm} G5/S5 & Secure: Common; widespread and abundant. \\
+  \hspace{1mm} GNR/SNR & \\  
+  \hspace{1mm} GNA/SNA  & \\  
+  \hspace{1mm} GU/SU  & \\  
+ \bottomrule
+\end{longtable}
+
+Other factors considered in ranking species include: number of individuals, occupied habitat, trends, threats, and level of protection.\\
+
+Most species have single-valued conservation ranks; however, some variations are possible. Range ranks (e.g., G1G2 or S1S3) indicate the (usually narrow) range of uncertainty in the rank. For example, a species may have more populations than is typical of the lower rank but few are protected; this may affect the viability of the population(s). A taxon (T) rank follows the global (G) rank of the full species as a qualifier to indicate the conservation status of the subspecies or variety of that species, e.g., G5T3. The latter indicates that the subspecies or variety is much rarer than the typical species; the typical species may or may not occur in Pennsylvania. A global rank may also be followed by a 'Q'-qualifier to indicate that there are prevailing taxonomic questions for that species (e.g., G4Q). A '?'-qualifier may be used to indicate that there is a level of uncertainty in the global or state rank (e.g, G4? or S2?).  Definitions of conservation status ranks and rank qualifiers are presented in Table \ref{table:rankdef}.  State ranks for many species are modified annually or as needed to reflect current information. \\
+
+All member programs of the NatureServe Network of Natural Heritage Programs and Conservation Data Centers across the Western Hemisphere use the same ranking system and format. This allows direct conservation status comparisons across the political and geographic landscape, and it is one of the most powerful aspects of the Network.\\
+\par
+
+Table \ref{table:gsrank} presents an overview of the distribution of species with varios G/S rank combinations.
 
 <<label=longtable, echo=FALSE, results='asis'>>=
 cat('\\begin{longtable}{p{0.9in}C{0.35in}C{0.35in}C{0.35in}C{0.35in}C{0.35in}C{0.35in}C{0.35in}C{0.35in}C{0.35in}C{0.35in}}\n')
+cat('\\caption{Distribution of species among G- and S-ranks in Pennsylvania.}\\label{table:gsrank} \\\\ \n')
 cat('\\toprule\n')
-#cat('SGCN Name & SGCN Season \\\\ \n')
 cat('\\rowcolor[gray]{.85}{rank}&{S1}&{S2}&{S3}&{S4}&{S5}&{SH}&{SNA}&{SNR}&{SU}&{SX} \\\\ \n')
 cat('\\midrule\n')
 cat('\\endhead\n')
-#cat(paste0('one','&','teo \\\\ \n'))
 for(i in 1:nrow(gs_matrix)){
   cat(paste0('\\hspace{2mm}',gs_matrix$rank[i],'&',gs_matrix$S1[i],'&',gs_matrix$S2[i],'&',gs_matrix$S3[i],'&',gs_matrix$S4[i],'&',gs_matrix$S5[i],'&',gs_matrix$SH[i],'&',gs_matrix$SNA[i],'&', gs_matrix$SNR[i],'&',gs_matrix$SU[i],'&',gs_matrix$SX[i], '\\\\ \n'))
 }
 cat('\\bottomrule\n')
 cat('\\end{longtable}\n')
 @
-
-\Sexpr{length(which(et_plants$GRANK_rounded=="G1"|et_plants$GRANK_rounded=="T1"|et_plants$GRANK_rounded=="G2"|et_plants$GRANK_rounded=="T2"))} species are ranked critically imperiled (G1/T1) or imperiled (G2/T2) on a global level. Another \Sexpr{length(which(et_plants$GRANK_rounded=="G3"|et_plants$GRANK_rounded=="T3"))} species are vulnerable to extinction (G3/T3).
-\\
 \noindent\normalsize
-X species in Pennsylvania are considered extirpated in the state.
-\\
-number of endemics/near-endemics to Pennsylvania? 
-\\
-\subsubsection{IUCN Redlist}
+The Pennsylvania Natural Heritage Program (PNHP) currently tracks approximately \Sexpr{format(length(which(data_ET_native$TRACKING.STATUS=="Y"|data_ET_native$TRACKING.STATUS=="W")), big.mark=",", scientific=FALSE)} rare plant species in Pennsylvania; of these,
+\Sexpr{length(which(data_ET_native$GRANK_rounded=="G1"|data_ET_native$GRANK_rounded=="T1"|data_ET_native$GRANK_rounded=="G2"|data_ET_native$GRANK_rounded=="T2"))} species are ranked critically imperiled (G1/T1) or imperiled (G2/T2) on a global level. Another \Sexpr{length(which(data_ET_native$GRANK_rounded=="G3"|data_ET_native$GRANK_rounded=="T3"))} species are vulnerable to extinction (G3/T3).  (CITE PNHP 2008).\\\\
+\noindent\normalsize Of the \Sexpr{format(length(which(data_ET_native$TRACKING.STATUS=="Y"|data_ET_native$TRACKING.STATUS=="W")), big.mark=",", scientific=FALSE)} tracked plant species, \Sexpr{format(length(which(data_ET_native$TRACKING.STATUS=="W")), big.mark=",", scientific=FALSE)} are on the PNHP "Watch List".\\\\
 
-A query (5/29/2018) of the IUCN Redlist (\url{http://www.iucnredlist.org}) yielded \Sexpr{nrow(dataRedlist)} species in Pennsylvania. However, upon further analysis only \Sexpr{length(which(dataRedlist$PA_present==1))} species (\Sexpr{as.integer( (length(which(dataRedlist$PA_present==1))/nrow(dataRedlist))*100 ) }\%) on the Redlist are present in Pennsylvania. The reason for this difference is due to distribution coding by the IUCN.  The following table present Red List data for the \Sexpr{length(which((dataRedlist$PA_present==1)&(dataRedlist$Red.List.status=="CR"|dataRedlist$Red.List.status=="EN"|dataRedlist$Red.List.status=="NT")))} species that are considered CR, EN, or NT. \\
+\noindent\normalsize
+There are \Sexpr{length(which(data_ET_native$SRANK_rounded=="SX"))} species in Pennsylvania are considered extirpated in the state.
+\\\\
+There are no true state-endemic species in Pennsylvania. However, there are some near-endemics such serpentine aster (\textit{Symphyotrichum depauperatum}).\\\\
+
+\noindent\normalsize\textbf{Understanding Legal Status} \\\\
+Legal status presents a simple hierarchy of endangerment in three, mostly familiar, categories: Threatened (the lowest status), Endangered (the highest status), and Endangered Extirpated. Definitions of legal statuses are presented in Table 2. Legal protection statuses of species are typically reviewed and updated, if needed, every two to three years. All species listed as threatened and endangered at the federal level are also listed within Pennsylvania regulations.  Proposals to alter the Pennsylvania status are identified in parentheses in the State Status column and defined in Table \ref{table:legalstatus}. These proposals will require regulatory approval before the new legal statuses become effective.
+
+\begin{longtable}{p{1in}p{5in}}\\
+ \caption{DCNR plant status codes and definitions. For additional information see \url{http://www.naturalheritage.state.pa.us/RankStatusDef.aspx}.}\label{table:legalstatus}
+ \small\\
+  \textbf{Code} & \textbf{Definition}\\ \midrule
+  \hspace{2mm} PE & Pennsylvania Endangered - Plant species which are in danger of extinction throughout most of their natural range within this Commonwealth, if critical habitat is not maintained or if the species is greatly exploited by man. This classification shall also include any populations of plant species that have been classified as Pennsylvania Extirpated, but which subsequently are found to exist in this Commonwealth. \\  
+  \hspace{2mm} PT & Pennsylvania Threatened - Plant species which may become endangered throughout most or all of their natural range within this Commonwealth, if critical habitat is not maintained to prevent their future decline, or if the species is greatly exploited by man.\\  
+  \hspace{2mm} PR & Pennsylvania Rare - Plant species which are uncommon within this Commonwealth. All species of the native wild plants classified as Disjunct, Endemic, Limit of Range and Restricted are included within the Pennsylvania Rare classification.\\  
+  \hspace{2mm} PX & 	Pennsylvania Extirpated - Plant species believed by the Department to be extinct within this Commonwealth. These plants may or may not be in existence outside the Commonwealth.\\  
+  \hspace{2mm} PV & Pennsylvania Vulnerable - Plant species which are in danger of population decline within Commonwealth because of their beauty, economic value, use as a cultivar, or other factors which indicate that persons may seek to remove these species from their native habitats.\\  
+  \hspace{2mm} TU & Tentatively Undetermined - A classification of plant species which are believed to be in danger of population decline, but which cannot presently be included within another classification due to taxanomic uncertainties, limited evidence within historical records, or insufficient data.\\  
+  \hspace{2mm} N &  No current legal status exists, but is under review for future listing. \\
+ \bottomrule
+\end{longtable}
+\par
+
+Native Plant Species Legislative Authority: Title 17 Chapter 45, Conservation of Native Wild Plants, January 1, 1988; Pennsylvania Department of Conservation and Natural Resources.
+\par
+In addition to the state legal status, there is also a Federal legal status (Table \ref{table:fedlegalstatus}). Currently, XX Pennsylvania native plant species are federally listed by the U.S. Fish and Wildlife Service as Threatened or Endangered; another XX species are candidates for listing (see Boxes 2 and 3). The federal Endangered Species Act (ESA 1973, as amended) is a national law, a legal tool for the protection and recovery of imperiled species. The law protects imperiled animals wherever they live but does not effectively protect plants and their habitats on private lands unless a federal permit is involved (e.g., critical habitat can be designated on private lands and convey substantial protections where there is a federal permit). The ESA goal is to recover listed species — to bring these species to the point where protection by the Act is no longer necessary (Scott et al. 2005).
+
+\begin{longtable}{p{1in}p{6in}}\\
+ \caption{US Fish and Wildlife Service status codes and definitions. For additional information see \url{http://www.naturalheritage.state.pa.us/RankStatusDef.aspx}.}\label{table:fedlegalstatus}
+ \small\\
+  \textbf{Code} & \textbf{Definition}\\ \midrule
+  \hspace{2mm} LE & Listed Endangered - A species which is in danger of extinction throughout all or a significant portion of its range. \\
+  \hspace{2mm} LT & Listed Threatened - Any species which is likely to become an endangered species within the foreseeable future throughout all or a significant portion of its range. \\  
+  \hspace{2mm} PE & Proposed Endangered - Taxa proposed to be listed as endangered. \\  
+  \hspace{2mm} PT & Proposed Threatened - Taxa proposed to be listed as threatened. \\    
+  \hspace{2mm} C & Candidate for listing. \\  
+ \bottomrule
+\end{longtable}
+Native Plant and Animal Species Legislative Authority:United States Endangered Species Act of 1973: Public Law 93-205. U.S. Fish and Wildlife Service.
+\subsubsection{IUCN Redlist}
+The IUCN Red List is the most complete global inventory of the conservation status of species. It uses a series of objective criteria to evaluate their risk of extinction (Figure 2.1) (IUCN, 2012a). For all species evaluated, the Red List provides information about threats, ecological requirements and habitats, and for some taxa it also proposes conservation actions that could be undertaken to reduce or prevent the risk of extinction.\\\\
+A query (5/29/2018) of the IUCN Redlist (\url{http://www.iucnredlist.org}) yielded \Sexpr{nrow(dataRedlist)} species in Pennsylvania (Table \ref{table:redlist}). However, upon further analysis only \Sexpr{length(which(dataRedlist$PA_present==1))} species (\Sexpr{as.integer( (length(which(dataRedlist$PA_present==1))/nrow(dataRedlist))*100 ) }\%) on the Redlist are present in Pennsylvania. The reason for this difference is due to distribution coding by the IUCN.  The following table present Red List data for the \Sexpr{length(which((dataRedlist$PA_present==1)&(dataRedlist$Red.List.status=="CR"|dataRedlist$Red.List.status=="EN"|dataRedlist$Red.List.status=="NT")))} species that are considered CR, EN, or NT. \\
 
 <<label=redlist_subset, echo=FALSE, results='asis'>>=
 dataRedlist_sub <- dataRedlist[which((dataRedlist$PA_present==1)&(dataRedlist$Red.List.status=="CR"|dataRedlist$Red.List.status=="EN"|dataRedlist$Red.List.status=="NT")),]
 dataRedlist_sub <- dataRedlist_sub[order(dataRedlist_sub$Red.List.status),]
+cat('\\captionsetup{width=4in}')
 cat('\\begin{longtable}{p{1.5in}C{0.65in}C{0.65in}C{0.65in}}\n')
+cat('\\small\\\\')
+cat('\\caption{Pennsylvania plant species that appear on the IUCN Red List.}\\label{table:redlist} \\\\ \n')
 cat('\\toprule\n')
 #cat('SGCN Name & SGCN Season \\\\ \n')
 cat('\\rowcolor[gray]{.85}{SNAME}&{Redlist Status}&{Redlist Criteria}&{Trend} \\\\ \n')
@@ -160,8 +255,6 @@ cat('\\end{longtable}\n')
 @
 Cite:IUCN 2014. IUCN Red List of Threatened Species. Version 2014.2. <www.iucnredlist.org>. Downloaded on 6 November 2014.\\
 
-Are there any species that we could consider as responsibilty species? Previous work by the VPTC 
-
 \subsection{Methods}
 \noindent\normalsize
 In order to make this project as repeatable and updatable as possible, we developed scripts that drove the analysis. Code is hosted on the PNHP GitHib (\url{https://github.com/PNHP/PCPP}).
@@ -172,6 +265,8 @@ The project area is the state of Pennsylvania. Pennsylvania has an area of 119,2
 For this project, the we worked with all tracked and watchlist plants. We worked with the PNHP botanists to confirm the species on the list.\\
 
 The complete list of species is presented in Appendix A.
+\subsubsection{Prioritoziation Scheme}
+
 
 \subsection{Results}
 \noindent\normalsize
@@ -181,20 +276,106 @@ Placeholder text
 The results of the priority setting provides the targets for the spatial part of this project.
 
 \subsubsection{Responsibility Species}
-A Pennsylvania-responsibility species (the term may also refer to subspecies or varieties) is one for which Pennsylvania plays a key role in sustaining its global security by hosting at least 10\% of its North American population or encompassing at least 25\% of its North American range. (PABS \url{http://www.pabiologicalsurvey.org/pennsylvania-responsibility.html})
+A Pennsylvania-responsibility species (the term may also refer to subspecies or varieties) is one for which Pennsylvania plays a key role in sustaining its global security by hosting at least 10\% of its North American population or encompassing at least 25\% of its North American range. (PABS \url{http://www.pabiologicalsurvey.org/pennsylvania-responsibility.html})  Are there any species that we could consider as responsibilty species? Previous work by the VPTC 
 
-\section{Threats}
+\newpage
+\section{Where do Pennsylvania's plant species occur?} % maybe this whole section gets moved to the second part of the report?
 \noindent\normalsize
+
+\subsection{Rarity-weighted Richness}
+This rarity-weighted richness approach tends to favor the identification of hot-spot clusters thant represent concentrations of limited range species. This provides a structured manner for analyzing their conservation significance.
+
+The score may be thought of as a measure of the area's irreplacability (only as it pertains to Pennsylvania.)
+
+\newpage
+\section{Threats} % maybe this whole section gets moved to the second part of the report?
+\noindent\normalsize
+It is estimated that there are around 400,000 plant species in the world, and at least 25 percent are threatened with extinction. 
+\begin{quotation}
+\noindent\textit{
+Because they are rooted in place, plants can’t move out of the way of an oncoming bulldozer, or take shelter until danger passes. And because many rare plants are highly localized, growing only in very specific soils or micro-climates, they are particularly susceptible to being wiped out, often without anyone’s knowledge. They are, in effect, hidden in plain sight. 
+\\-Stein and Gravuer, NatureServe, 2008} 
+\end{quotation}
+
+
+
+\subsection{Invasive Species}
 --Stolen from PA Flora--\\
-The Pennsylvania flora includes 3,091 species of vascular plants. Sixty-nine percent of these are plant species that evolved in eastern North America along with other indigenous plants and animals. The remaining thirty-one percent consist of plants that evolved elsewhere and have been brought to Pennsylvania through the actions of humans.\\
+The Pennsylvania flora includes at least X,XXX species of vascular plants that are considered exotic species--plants that evolved elsewhere and have been brought to Pennsylvania through the actions of humans. Plant introductions have been both deliberate and accidental. Many cultivated plants were brought by the earliest European settlers. Accidental introductions also have a long history and continue to occur as, for example, seeds and other propagules may hitch a ride to our region in the ship ballast water, airplane cargo holds, or on people's shoes. While many introduced plants have remained confined to cultivated fields and gardens, others have spread unchecked into the surrounding landscape. For instance, purple loosestrife (\textit{Lythrum salicaria}), a plant from Europe, has been able to dominate wetland habitats.  Further sources of information on invasive plants of our region include: Invasive Plants of the Eastern U.S., Mid-Atlantic Invasive Plant Council, and the Invasive Plant Atlas of the United States.\\ %Garlic mustard (\textit{Allaria petiolata}) has become a common invader of our forests.
 
-Plant introductions have been both deliberate and accidental. Many cultivated plants were brought by the earliest European settlers. Most of our agricultural crops and ornamental garden plants originated in other parts of the world and humankind's search for useful plants is an ongoing process. Accidental introductions also have a long history and continue to occur as, for example, seeds and other propagules "hitch a ride" in the ballast water of ships, airplane cargo holds, or on people's shoes.\\
+In Pennsylvania and other mid-Atlantic states, problems caused by invasive, non-native plants have been exacerbated by deer overabundance. White-tailed deer evolved in eastern North America along with the local flora, thus they recognize native plants as suitable food. These large herbivores do not eat most non-native plants as long as native species are available. This results in the proliferation of non-native species in heavily browsed landscapes and has led to the complete dominance of the forest floor by Japanese stiltgrass (\textit{Microstegium vimineum}) or garlic mustard (\textit{Alliaria petiolata}). A variety of cascading effects on ecosystem function brought about by invasive, non-native plants have been documented (CITATIONS).\\
 
-While many introduced plants have remained confined to cultivated fields and gardens, others have spread unchecked into the surrounding landscape. For instance, purple loosestrife (\textit{Lythrum salicaria}), a plant from Europe, has been able to dominate wetland habitats. Further sources of information on invasive plants of our region include: Invasive Plants of the Eastern U.S., Mid-Atlantic Invasive Plant Council, and the Invasive Plant Atlas of the United States.\\
+\subsection{Climate Change}
+Climate change, one of the greatest threats to the conservation of species and ecosystems, is already having serious impacts across the globe. In the 20th century, global temperatures increased by 0.7 °C (1.3 °F) and Northern Hemisphere snow cover declined by seven percent (Intergovernmental Panel on Climate Change 2007). The western United States has experienced an increase in average temperature during the last five years that is 70 percent greater than the world as a whole (Saunders et al. 2008). The change in climate is driving plants out of their current geographic ranges and will likely result in regional extirpation and even extinction for some plant species (Schneider et al. 2007). Warmer temperatures and changing rainfall have shifted vegetation in several ecosystems up mountain slopes and towards polar regions. Alteration of seasons has changed the timing of life-cycle events of plants and animals, potentially resulting in an asynchrony between plants, environmental cues, and interacting organisms such as pollinators (Joyce 2008). The United Nations Intergovernmental Panel on Climate Change (IPCC 2007) predicts that all of North America is likely to warm by 2°C (3.6°F) during this century. There will likely be more droughts and other extreme weather events. Colorado will likely become hotter and drier with shorter snow seasons, earlier snow melt, and longer fire seasons. These potential impacts will interact with the other stresses to rare plants, e.g., loss or fragmentation of habitat from development, mining, and introduction of invasive species. The full impacts of climate change on imperiled species are likely to significantly reduce habitat, which is particularly problematic for rare plants that demand very specific growing conditions (Loarie et al. 2008).
 
-In Pennsylvania and other mid-Atlantic states, problems caused by invasive, non-native plants have been exacerbated by deer overabundance. White-tailed deer evolved in eastern North America along with the local flora, thus they recognize native plants as suitable food. These large herbivores do not eat most non-native plants as long as native species are available. This results in the proliferation of non-native species in heavily browsed landscapes and has led to the complete dominance of the forest floor by Japanese stiltgrass (\textit{Microstegium vimineum}) or garlic mustard (\textit{Alliaria petiolata}). A variety of cascading effects on ecosystem function brought about by invasive, non-native plants have been documented.\\
+\par\noindent\textbf{Climate Change Vulnerability}
+Climate change vulnerability assessments were conducted for \Sexpr{nrow(data_ccvi)} plant species in Pennsylvania using the Climate Change Vulnerability Index (CCVI v2.0,3.0) developed by NatureServe \url{http://www.natureserve.org/conservation-tools/climate-change-vulnerability-index}. The CCVI allows the user to examine the exposure and sensitivity of a species to a series of risk factors associated with climate change. Table \ref{table:ccvi} presents the results of these vulnerability assessments. 
+%The S and G-ranks provide demographic information not contained in the CCVI that should be used in concert with the CCVI scores when interpreting overall results. 
+Definitions for the CCVI scores are as follows:
+\begin{itemize}
+ \item \underline{Extremely Vulnerable}: Abundance and/or range extent within geographical area assessed extremely likely to substantially decrease or disappear by 2050.
+ \item \underline{Highly Vulnerable}: Abundance and/or range extent within geographical area assessed likely to decrease significantly by 2050.
+ \item \underline{Moderately Vulnerable}: Abundance and/or range extent within geographical area assessed likely to decrease by 2050.
+ \item \underline{Not Vulnerable/Presumed Stable}: Available evidence does not suggest that abundance and/or range extent within the geographic area assessed will change (increase/decrease) substantially by 2050. Actual range boundaries may change.
+ \item \underline{Not Vulnerable/Increase Likely}: Available evidence suggests that abundance and/or range extent within geographic area assessed is likely to increase by 2050.
+\end{itemize}
+\par
+Additional information is available in the final report. %provided at the end of the table and each species is linked to a summary sheet that describes the factors contributing most to their climate change vulnerability. 
+
+<<label=ccvitable, echo=FALSE, results='asis'>>=
+data_ccvi <- data_ccvi[order(data_ccvi$SNAME),] # sort to alphabetical
+cat('\\begin{longtable}{p{1.75in}C{1.75in}}\n')
+cat('\\small\\\\')
+cat('\\caption{Climate Change Vulnerability Index scores for plant species in Pennsylvania.}\\label{table:ccvi} \\\\ \n')
+cat('\\toprule\n')
+cat('\\rowcolor[gray]{.85}{Species}&{Score} \\\\ \n')
+cat('\\midrule\n')
+cat('\\endhead\n')
+for(i in 1:nrow(data_ccvi)){
+  cat(paste0('\\hspace{2mm}','\\textit{',data_ccvi$SNAME[i],'} &',data_ccvi$score[i], '\\\\ \n'))
+}
+cat('\\bottomrule\n')
+cat('\\end{longtable}\n')
+@
+
+Furedi, M., B. Leppo, M. Kowalski, T. Davis, and B. Eichelberger. 2011. Identifying
+species in Pennsylvania potentially vulnerable to climate change. Pennsylvania Natural
+Heritage Program, Western Pennsylvania Conservancy, Pittsburgh, PA. 
+
+\par\noindent\textbf{Climate Envelope Modeling}\\
+Climate change is creating new challenges for biodiversity conservation. As temperatures, rainfall patterns, and sea levels change, distributions of plants and animals may shift geographically, altering their relationships with the environment and other species.Climate envelope models are an important tool used in vulnerability assessments to help resource managers understand how plants and animals may respond to a changing climate. Climate envelope models describe the climate where a species currently lives (its climate "envelope"), and then map the geographic shift of that envelope under climate change. Because we can't know for certain how climate will change in the future, multiple climate change scenarios are used in these models.\\
+
+Will plant movements keep up with climate change (2013)
+
+Watling JI, LA Brandt, FJ Mazzotti and SS Romañach. 2013. Use and Interpretation of Climate Envelope Models: A Practical Guide. University of Florida, 43 pp.\\
+
+\par\noindent\textbf{Geophysical Settings}\\
+Conservationists have proposed methods for adapting to climate change that assume species distributions are primarily explained by climate variables. The key idea is to use the understanding of species-climate relationships to map corridors and to identify regions of faunal stability or high species turnover. An alternative approach is to adopt an evolutionary timescale and ask ultimately what factors control total diversity, so that over the long run the major drivers of total species richness can be protected. Within a single climatic region, the temperate area encompassing all of the Northeastern U.S. and Maritime Canada, we hypothesized that geologic factors may take precedence over climate in explaining diversity patterns. If geophysical diversity does drive regional diversity, then conserving geophysical settings may offer an approach to conservation that protects diversity under both current and future climates. Here we tested how well geology predicts the species diversity of 14 US states and three Canadian provinces, using a comprehensive new spatial dataset. Results of linear regressions of species diversity on all possible combinations of 23 geophysical and climatic variables indicated that four geophysical factors; the number of geological classes, latitude, elevation range and the amount of calcareous bedrock, predicted species diversity with certainty (adj. R2=0.94). To confirm the species-geology relationships we ran an independent test using 18,700 location points for 885 rare species and found that 40percent of the species were restricted to a single geology. Moreover, each geology class supported 5–95 endemic species and chi-square tests confirmed that calcareous bedrock and extreme elevations had significantly more rare species than expected by chance (P<0.0001), strongly corroborating the regression model. Our results suggest that protecting geophysical settings will conserve the stage for current and future biodiversity and may be a robust alternative to species-level predictions.\\
+
+Anderson MG, Ferree CE (2010) Conserving the Stage: Climate Change and the Geophysical Underpinnings of Species Diversity. PLoS ONE 5(7): e11554. https://doi.org/10.1371/journal.pone.0011554\\
 
 
+\subsection{Motorized Recreational Activities}
+
+Motorized recreation (including off highway, off road, all terrain, and four-wheel drive vehicles, motorcycles, and snowmobiles) is rapidly increasing in many areas where Pennsylvania’s rare plants grow and it is often difficult to enforce regulations or close access to protect plant habitat. Motorized recreation can reduce natural habitat for plants, impacting individual plants and populations. Roads and trails created by off-road vehicles impact plants by altering habitat, killing plants, increasing erosion, and creating dispersal corridors for invasive plant species.
+
+\subsection{Residential Development}
+
+Twenty-four(UPDATE) percent of the habitat occupied by imperiled plants in Pennsylvania is found on private land. Accelerating residential and urban development, along with associated infrastructure such as roads and utilities, is consuming and fragmenting important habitat for native plants and plant communities. Exurban development (low-density rural development), the fastest growing land use in the United States, has been found to reduce many native species near homes and increase exotic species, with effects manifested over decades (Hansen et al. 2005). In addition to local effects, exurban development may alter ecological processes and biodiversity on adjacent and distant public lands. Underlying mechanisms involve alteration of habitat, ecological processes, biotic interactions, and increased human disturbance (Hansen et al. 2005).
+
+\subsection{Road Construction and Maintenance}
+Roads can have a serious impact upon the natural integrity and habitat effectiveness of rare plant sites. Along with extirpating populations and destroying habitat, roads contribute to fragmentation that may interfere with natural processes such as pollination and seed dispersal. Roads can act as barriers to insect pollinators for some plants. Other impacts from road construction and maintenance (e.g., mowing and herbicide application) include erosion and sedimentation, as well as introduction of invasive species.
+
+\subsection{Other Factors}
+Furthermore, many rare plants are restricted to unusual substrates and comprise very small populations, thereby rendering them subject to random catastrophic events such as landslides or infestation. Other factors that impact Pennsylvania’s rare plants include: 
+\begin{enumerate}
+\item widespread lack of awareness regarding their existence and precarious status; 
+\item	inadequate funding for conservation and research; 
+\item	inadequate legal protection for plants; and 
+\item	over-collection for horticultural purposes (e.g., cacti, orchids) or medicinal uses (e.g., ginseng).
+\end{enumerate}
+
+\newpage
 \section{Spatial Prioritorization}
 \noindent\normalsize
 We can’t work everywhere
@@ -220,6 +401,7 @@ Placeholder text
 \noindent\normalsize
 \blindtext
 
+\newpage
 \section{Putting this Plan Into Practice}
 Highlight broad scale patterns of plant distribution and targeted areas\\
 Can focus on protection, management, and other issues
@@ -227,30 +409,70 @@ Can focus on protection, management, and other issues
 \blindtext
 \subsection{In situ conservation at habitat level}
 \blindtext
+
+...initiated a process to prepare habitats maps at site level as tool for planning and decision making for managers. The objective of those maps was double, from one hand to integrate existing data (species distributions, land use…), and from other to support decision making by showing homogenous units. 
+
+The preparation of habitat maps is not an automatic process, since it requires to answer quite number of questions that will define which methodology to apply. This includes questions like: What is habitat? May countries have their own definition of “habitat”, if not a series of defining characters must be settled. A regional dialoge to agree on a common hierarchical ecosystems (or habitats) classifications might be very useful at regional scale
+
 \subsection{In situ conservation at species/population level}
 \blindtext
 \subsection{Species reintroduction programs}
 Species reintroduction is the deliberate release of a species into the wild, from captivity or other areas where the organism is capable of survival. Species that may be eligible for reintroduction are typically threatened or endangered in the wild. 
+
 \subsection{Ex situ conservation}
 It is the process of protecting an endangered species, variety or breed, of plant or animal outside its natural habitat.
 \subsubsection{Ancillary botanic gardens}
 \blindtext
+
 \subsection{Community and Participatory Approaches}
-\blindtext
+\textbf{Friends of the State Line Serpentine Barrens}\\
+The Friends of the State Line Serpentine Barrens is an independent, nonprofit volunteer organization formed and managed by local volunteers. The Friends formed to provide a one centralized organization to bridge the gap between the many stakeholders involved in the State Line Serpentine Barrens.The Friends of the State Line Serpentine Barrens is a chapter of the Pennsylvania Parks and Forest Foundation (PPFF). PPFF is a private, non-profit organization that works to develop resources that complement the Department of Conservation and Natural Resources (DCNR) in the areas of State Parks and Forests through the actions of people and assets\\
+\url{http://the2nomads.org/FriendsWebSite/index.html}
+\par\noindent\\
+\textbf{Botanical Society of Western Pennsylvania}\\
+The Botanical Society of Western Pennsylvania (BSWP) is one of 
+the oldest botanical organizations in the country. Since 1886, our members have met, botanized, 
+and served as a resource of knowledge on the flowers of Pennsylvania.\\
+\url{http://the2nomads.org/FriendsWebSite/index.html}
+\par\noindent\\
+\textbf{iNaturalist and Other Citizen Science Projects}\\
+iNaturalist is a citizen science project and online social network of naturalists, citizen scientists, and biologists built on the concept of mapping and sharing observations of biodiversity across the globe.\\  Number of plantr recors in Pennsylvania?
+\url{http://www.inaturalist.org/}
+
+
 \subsection{Habitat Restoration}
 Habitat restoration is the practice of renewing and restoring degraded, damaged, or destroyed ecosystems and habitats in the environment by active human intervention and action.
+
+
 \subsection{Land Protection}
-\blindtext
+\noindent\normalsize
+Formally designated protected areas in Pennsylvania number almost ???. 
+
+\noindent\normalsize
+The proportion of land which is protected under GAP Categories is X percent (REFERENCE), in line with the northeast as a whole (CITE PAD-US).\\
+
+Conservation Easements (NCED)\\
+
+Nationally designated sites \\
+
+INSERT SOME SORT OF TABLE with contribution to rare plant species\\
+
+To date, in situ habitat protection has played an important role in the conservation of plant diversity
+
 \subsubsection{Natural Heritage Areas (NHAs)}
 \noindent\normalsize
 NHAs are sites, which means that they can have a boundary that exists on a map. NHAs can serve as a finer filter.
-
+\newpage
 \section{Overall Conclusions and recommendations}
 Dummy text
 \blindtext
 
 \section{Acknowledgements}
-We would like to thank the following people for their input on the development of this project:
+We would like to thank the following people for their input on the development of this project: \Sexpr{data_acknowledgements}.
+
+% References
+%\bibliographystyle{apalike}
+%\bibliography{pcpp}
 
 
 \end{document}

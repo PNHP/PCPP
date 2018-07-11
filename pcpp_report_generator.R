@@ -10,6 +10,12 @@ setwd(working_directory)
 ############## develop datasets ##########################
 
 db <- dbConnect(SQLite(), dbname = databasename)
+# ET plants
+SQLquery_ET <- paste("SELECT SNAME,SCOMNAME,SRANK,GRANK,ELSUBID,ELCODE,`SRANK.CHANGE.DATE`,`SRANK.REVIEW.DATE`,`TRACKING.STATUS` , `USESA` , `PA.STATUS` , `PBSSTATUS` , `PBS.DATE` , `PBSQUAL` , `SENSITV_SP` , `AQUATIC.INDICATOR` , `ER.RULE` , `In.ER.` , `GRANK_rounded` , `SRANK_rounded` , `temp_taxostatus` ","FROM et_plants")
+data_ET <- dbGetQuery(db, statement=SQLquery_ET )
+data_ET <- data_ET[which(substr(data_ET$ELCODE,1,1)!="N"),] # subset out bryophytes and lichens
+source(paste(loc_scripts, "dataprep_speciesTableMaker.r", sep = "/"))
+
 # IUCN redlist
 SQLquery_IUCN <- paste("SELECT SNAME, `Red.List.status`, `Red.List.criteria`, `Population.trend`, PA_present","FROM redlist")
 dataRedlist <- dbGetQuery(db, statement = SQLquery_IUCN )
@@ -32,14 +38,14 @@ dbDisconnect(db)
 setwd(output_directory)
 print("Generating the PDF report...") # report out to ArcGIS
 daytime <-gsub("[^0-9]", "", Sys.time() )    # makes a report time variable
-#knit2pdf(paste(working_directory,"pcpp_report.rnw",sep="/"), output=paste("pcppReport",daytime, ".tex",sep=""))   #write the pdf
-knit("../pcpp_report.rnw", output=paste("pcppReport",daytime, ".tex",sep=""))
+knit("../pcpp_report_new.rnw", output=paste("pcppReport",daytime, ".tex",sep=""))
 call <- paste0("pdflatex -halt-on-error -interaction=nonstopmode ","pcppReport",daytime,".tex")
 system(call)
+system(paste0("biber ","pcppReport",daytime))
 system(call) # 2nd run to apply citation numbers
 
 #delete excess files from the pdf creation
-fn_ext <- c(".tex",".log",".aux",".out",".toc")
+fn_ext <- c(".tex",".log",".aux",".out",".toc",".blg",".bbl",".bcf",".run.xml")
 for(i in 1:NROW(fn_ext)){
   fn <- paste("pcppReport",daytime, fn_ext[i],sep="")
   if (file.exists(fn)){ 

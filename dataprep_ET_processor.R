@@ -55,7 +55,6 @@ eo_ptreps_plants <- arc.select(eo_ptreps, fields=c('ELCODE','SNAME','SCOMNAME','
 eo_ptreps <- NULL
 biotics_records <- unique(eo_ptreps_plants)
 biotics_records <- biotics_records[order(biotics_records$SNAME),]
-
 # if the species is in biotics label it as so
 et_plants$temp_taxostatus[et_plants$SCIENTIFIC.NAME %in% biotics_records$SNAME] <- "in biotics"
 
@@ -72,6 +71,9 @@ et_plants$temp_taxostatus[et_plants$SCIENTIFIC.NAME %in% spec_sspvar_noBiotics] 
 #subset out the duplicates and use this from now on!
 et_plants <- et_plants[which(et_plants$temp_taxostatus!="subspecific taxa, effective duplicate"|is.na(et_plants$temp_taxostatus)),]
 
+
+
+
 # rename columns to standard biotic names
 names(et_plants)[names(et_plants)=="S.RANK"] <- "SRANK"
 names(et_plants)[names(et_plants)=="G.RANK"] <- "GRANK"
@@ -84,6 +86,9 @@ names(et_plants)[names(et_plants)=="PBS.STATUS"] <- "PBSSTATUS"
 names(et_plants)[names(et_plants)=="PA.FED.STATUS"] <- "USESA"
 names(et_plants)[names(et_plants)=="Rounded.S.RANK"] <- "SRANK_rounded"
 names(et_plants)[names(et_plants)=="Rounded.G.RANK"] <- "GRANK_rounded"
+
+
+
 
 #####################################
 #get taxonomic information
