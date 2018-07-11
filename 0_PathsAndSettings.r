@@ -3,6 +3,8 @@
 
 if (!requireNamespace("here", quietly=TRUE)) install.packages("here")
 require(here)
+if (!requireNamespace("reshape2", quietly=TRUE)) install.packages("reshape2")
+require(reshape2)
 
 # Set input paths ----
 working_directory <- "E:/pcpp/PCPP"
