@@ -1,5 +1,7 @@
 if (!requireNamespace("RSQLite", quietly=TRUE)) install.packages("RSQLite")
 require(RSQLite)
+if (!requireNamespace("data.table", quietly=TRUE)) install.packages("data.table")
+require(data.table)
 
 loc_scripts <- "E:/pcpp/PCPP"
 source(paste(loc_scripts, "0_PathsAndSettings.R", sep = "/"))

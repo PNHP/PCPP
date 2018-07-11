@@ -5,6 +5,7 @@
 %
 % This template has been downloaded from:
 % http://www.LaTeXTemplates.com
+% http://www.latextemplates.com/template/stylish-article
 %
 % Original author:
 % Mathias Legrand (legrand.mathias@gmail.com) 
@@ -261,26 +262,36 @@ The nature of threat must be specified as that determines actions. Appropriate m
  \centering
   \begin{tabulary}{\linewidth}{LL}
    \toprule
-   \textbf{Level} & \textbf{Threat} \\
+   \textbf{Level 1 Threats} & \textbf{Description} \\
    \midrule
-   1 & Residential and Commercial Development\\
-   1.1 & housing and urban area\\
-   1.2 & commercial and industrial areas\\
-   1.3 & tourism and recreation areas\\
-   2 & Agricultural and Aquaculture\\
-   3 & Energy Production and Mining\\
-   4 & Transportation and Service Corridors\\
-   5 & Biological Resource Use\\
-   6 & Human Intrustions and Disturbance\\
-   7 & Natural System Modifications\\
-   8 & Invasive and other Problematic Species and Genes\\
-   9 & Pollution\\ 
-   10 & Geological Events\\
-   11 & Climate Change and Severe Weather\\
+   1. Residential and Commercial Development & blah blah blah\\
+   2. Agricultural and Aquaculture & \\
+   3. Energy Production and Mining & \\
+   4. Transportation and Service Corridors & \\
+   5. Biological Resource Use & \\
+   6. Human Intrustions and Disturbance & \\
+   7. Natural System Modifications & \\
+   8. Invasive and other Problematic Species and Genes & \\
+   9. Pollution & \\ 
+   10. Geological Events & \\
+   11. Climate Change and Severe Weather & \\
    \bottomrule
   \end{tabulary}
  \label{tab:threat}
 \end{table*}
+
+
+\subsubsection{Residential and Commercial Development}
+\subsubsection{Agricultural and Aquaculture}
+\subsubsection{Energy Production and Mining}
+\subsubsection{Transportation and Service Corridors}
+\subsubsection{Biological Resource Use}
+\subsubsection{Human Intrustions and Disturbance}
+\subsubsection{Natural System Modifications}
+\subsubsection{Invasive and other Problematic Species and Genes}
+\subsubsection{Pollution}
+\subsubsection{Geological Events}
+\subsubsection{Climate Change and Severe Weather}
 
 
 \subsubsection{Invasive Species}
@@ -335,6 +346,8 @@ Furthermore, many rare plants are restricted to unusual substrates and comprise 
 
 \par\noindent\textbf{Methodological Approach}\\
 \noindent Using the threat lexicon developed by \citeauthor{salafsky_standard_2008} (\citeyear{salafsky_standard_2008}) we assigned threat categories to all XX tracked and watchlist plant species in Pennsylvania.
+
+
 
 \subsubsection{Feasibility}
 Feasibility  for conservation action is a major criteria for species prioritize species for conservation action. For our purposes, we broadly define feasibility as the likelihood of maintaining the species in the state.  We should note that feasibility may not have a direct relationship to status or threat.

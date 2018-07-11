@@ -55,7 +55,6 @@ eo_ptreps_plants <- arc.select(eo_ptreps, fields=c('ELCODE','SNAME','SCOMNAME','
 eo_ptreps <- NULL
 biotics_records <- unique(eo_ptreps_plants)
 biotics_records <- biotics_records[order(biotics_records$SNAME),]
-
 # if the species is in biotics label it as so
 et_plants$temp_taxostatus[et_plants$SCIENTIFIC.NAME %in% biotics_records$SNAME] <- "in biotics"
 
