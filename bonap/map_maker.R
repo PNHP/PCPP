@@ -12,11 +12,17 @@ require(dplyr)
 #set paths
 counties <- "W:/Heritage/Heritage_Projects/1495_PlantConservationPlan/BONAP/bonap.gdb/counties_us"
 bonap_data <- "W:/Heritage/Heritage_Projects/1495_PlantConservationPlan/BONAP/bonap_data.csv"
+states <- "W:/Heritage/Heritage_Projects/1495_PlantConservationPlan/BONAP/bonap.gdb/states_us_clip"
 output_folder <- "W:/Heritage/Heritage_Projects/1495_PlantConservationPlan/BONAP/Maps/"
 image_folder <- 'W:/Heritage/Heritage_Projects/1495_PlantConservationPlan/bonap/bonap_originals'
 
-#open counties with arcbridge
+#open states with arcbridge
 arc.check_product()
+state_open <- arc.open(states)
+state_select <- arc.select(state_open)
+state_lyr <- arc.data2sf(state_select)
+
+#open counties with arcbridge
 county_open <- arc.open(counties)
 county_select <- arc.select(county_open)
 county_lyr <- arc.data2sf(county_select)
@@ -37,31 +43,34 @@ cols <- c("Not present in state"="yellow4",
           "Present in state"="green4",
           "Present, not rare"="green1",
           "Present, rare"="yellow",
-          "Present in state and exotic"="blue",
+          "Present in state, exotic"="blue",
           "Exotic and present"="cyan2",
           "Noxious"="magenta",
-          "Eradicated"="grey30",
-          "Native, but adventive in state"="grey70",
-          "Extirpated (historic)"="red")
+          "Eradicated"="grey15",
+          "Native, adventive"="aquamarine",
+          "Extirpated (historic)"="goldenrod1",
+          "Unknown"="grey70")
 
 # start loop for all species columns
 for(b in bonap_maps){
   # select species column and only include if species is present not rare (PNR) or present rare (PR)
   column <- county_bonap %>%
     select(b)
+  column[[b]] <- gsub("SPE","Present in state, exotic", column[[b]])
   column[[b]] <- gsub("SNP","Not present in state", column[[b]])
   column[[b]] <- gsub("SP","Present in state", column[[b]])
   column[[b]] <- gsub("PNR","Present, not rare", column[[b]])
   column[[b]] <- gsub("PR","Present, rare", column[[b]])
-  column[[b]] <- gsub("SPE","Present in state and exotic", column[[b]])
   column[[b]] <- gsub("PE","Exotic and present", column[[b]])
   column[[b]] <- gsub("NOX","Noxious", column[[b]])
   column[[b]] <- gsub("RAD","Eradicated", column[[b]])
-  column[[b]] <- gsub("SNA","Native, but adventive in state", column[[b]])
+  column[[b]] <- gsub("SNA","Native, adventive", column[[b]])
   column[[b]] <- gsub("EXT","Extirpated (historic)", column[[b]])
-  
-  ggplot(column) +
-    geom_sf(mapping=aes(fill=column[[b]]),lwd=0.25,color="grey40") +
+  column[[b]] <- gsub("color not found", "Unknown", column[[b]])
+
+  ggplot() +
+    geom_sf(data=column, mapping=aes(fill=column[[b]]),lwd=0.25,color="grey40") +
+    geom_sf(data=state_lyr, fill=NA, lwd=0.3, color="grey30") +
     scale_colour_manual(values=cols, aesthetics = c("fill")) +
     labs(title=gsub('_',' ',b),
          subtitle="Range within Contigious United States")+
