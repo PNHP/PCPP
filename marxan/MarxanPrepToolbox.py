@@ -1,12 +1,16 @@
 #-------------------------------------------------------------------------------
-# Name:        module1
-# Purpose:
+# Name:        MarxanPrepToolbox.py
+# Purpose:     The purpose of the Marxan Prep Toolbox is to provide several
+#              tools that aid in the preparation of a Marxan database. Prior to
+#              running these tools, the user must have prepared a 'Cost' layer
+#              and a .csv of species names, species codes, 'prop' (conservation
+#              target), and 'spf' (species penalty factor).
 #
-# Author:      mmoore
+# Author:      MMOORE
+#              Western Pennsylvania Conservancy
+#              Pennsylvania Natural Heritage Program
 #
 # Created:     06/09/2018
-# Copyright:   (c) mmoore 2018
-# Licence:     <your licence>
 #-------------------------------------------------------------------------------
 
 # import system modules
@@ -19,15 +23,15 @@ arcpy.env.overwriteOutput = True
 
 class Toolbox(object):
     def __init__(self):
-        self.label = "MarxanToolbox"
+        self.label = "MarxanPrepToolbox"
         self.alias = "Marxan Preparation Tools"
 
         # List of tool classes associated with this toolbox
-        self.tools = [CreateMarxanDatabase, CreateMarxanGrid, CreatePUDAT,CreateSPECDAT]
+        self.tools = [CreateMarxanDatabase, CreateMarxanGrid, CreatePUDAT, CreateBOUNDDAT, CreateSPECDAT,CreatePUxSPEC]
 
 class CreateMarxanDatabase(object):
     def __init__(self):
-        self.label = "Create Marxan Database"
+        self.label = "1. Create Marxan Database"
         self.description = """This tool generates the template for the folder
         structure and input.dat file for your Marxan database"""
         self.canRunInBackground = False
@@ -126,7 +130,7 @@ class CreateMarxanDatabase(object):
 
 class CreateMarxanGrid(object):
     def __init__(self):
-        self.label = "Create Marxan Grid"
+        self.label = "2. Create Marxan Grid"
         self.description = """This tool generates a grid and assigns a unique
         numerical ID to all zones to be used as planning units for Marxan"""
         self.canRunInBackground = False
@@ -187,19 +191,21 @@ class CreateMarxanGrid(object):
         grid_lyr = arcpy.MakeFeatureLayer_management(pulayer,"grid_lyr")
         arcpy.SelectLayerByLocation_management(grid_lyr,"INTERSECT",extent,"","NEW_SELECTION","INVERT")
         arcpy.DeleteFeatures_management(grid_lyr)
-        arcpy.AlterField_management(grid_lyr,"GRID_ID","id")
+        arcpy.AddField_management(grid_lyr,"id","LONG",0)
 
+        i = 1
         with arcpy.da.UpdateCursor(pulayer,"id") as cursor:
             for row in cursor:
-                row[0] = row[0].replace("-","")
+                row[0] = i
                 cursor.updateRow(row)
+                i+=1
 
         arcpy.CopyFeatures_management(pulayer,os.path.join(marxan_db,"pulayer","pulayer.shp"))
         return
 
 class CreatePUDAT(object):
     def __init__(self):
-        self.label = "Create pu.dat File"
+        self.label = "3. Create pu.dat File"
         self.description = """This tool calculates cost and status fields and
         exports pu.dat to proper location in Marxan database"""
         self.canRunInBackground = False
@@ -303,9 +309,62 @@ class CreatePUDAT(object):
         f.close()
         return
 
+class CreateBOUNDDAT(object):
+    def __init__(self):
+        self.label = "4. Create bound.dat File"
+        self.description = """This tool calculates boundary length between
+        planning units and exports bound.dat to proper location in Marxan database"""
+        self.canRunInBackground = False
+        self.category = "Planning Unit Grid Tools"
+
+    def getParameterInfo(self):
+        MarxanDB = arcpy.Parameter(
+            displayName = "Select Marxan Database Folder (should have planning unit shapefile included in 'pulayer' folder)",
+            name = "MarxanDB",
+            datatype = "DEFolder",
+            parameterType = "Required",
+            direction = "Input")
+
+        params = [MarxanDB]
+        return params
+
+    def isLicensed(self):
+        return True
+
+    def updateParameters(self, params):
+        return
+
+    def updateMessages(self, params):
+        return
+
+    def execute(self, params, messages):
+        MarxanDB = params[0].valueAsText
+
+        arcpy.env.workspace = "in_memory"
+
+        pulayer = os.path.join(MarxanDB,"pulayer","pulayer.shp")
+
+        poly_neighbors = arcpy.PolygonNeighbors_analysis(pulayer,"poly_neighbors","id")
+
+        arcpy.AlterField_management(poly_neighbors,"src_id","id1")
+        arcpy.AlterField_management(poly_neighbors,"nbr_id","id2")
+        arcpy.AlterField_management(poly_neighbors,"LENGTH","boundary")
+
+        bound_dat = os.path.join(MarxanDB,"input","bound.dat")
+
+        fields = ["id1","id2","boundary"]
+
+        with open(bound_dat, "a+") as f:
+            f.write('\t'.join(fields)+'\n')
+            with arcpy.da.SearchCursor(poly_neighbors, fields) as cursor:
+                for row in cursor:
+                    f.write('\t'.join([str(r) for r in row])+'\n')
+        f.close()
+        return
+
 class CreateSPECDAT(object):
     def __init__(self):
-        self.label = "Create spec.dat File"
+        self.label = "5. Create spec.dat File"
         self.description = """This tool calculates cost and status fields and
         exports pu.dat to proper location in Marxan database"""
         self.canRunInBackground = False
@@ -391,7 +450,7 @@ class CreateSPECDAT(object):
         lu_spec = arcpy.TableToTable_conversion(species_csv,env.workspace,"lu_spec")
 
         arcpy.AddMessage("joining fields")
-        arcpy.JoinField_management(spec_table,elsubid1,lu_spec,elsubid2,[sname,"prop","spec"])
+        arcpy.JoinField_management(spec_table,elsubid1,lu_spec,elsubid2,[sname,"prop","spf"])
 
         arcpy.AddMessage("altering elsubid1")
         arcpy.AlterField_management(spec_table,elsubid1,"id")
@@ -405,6 +464,79 @@ class CreateSPECDAT(object):
         with open(spec_dat, "a+") as f:
             f.write('\t'.join(fields)+'\n')
             with arcpy.da.SearchCursor(spec_table,fields) as cursor:
+                for row in cursor:
+                    f.write('\t'.join([str(r) for r in row])+'\n')
+        f.close()
+        return
+
+class CreatePUxSPEC(object):
+    def __init__(self):
+        self.label = "6. Create puvspr.dat File"
+        self.description = """This tool calculates area of overlap of species
+        witin each planning unit"""
+        self.canRunInBackground = False
+        self.category = "Species Prep Tool"
+
+    def getParameterInfo(self):
+        MarxanDB = arcpy.Parameter(
+            displayName = "Select Marxan Database Folder",
+            name = "MarxanDB",
+            datatype = "DEFolder",
+            parameterType = "Required",
+            direction = "Input")
+
+        species_lyr = arcpy.Parameter(
+            displayName = "Species Layer",
+            name = "species_lyr",
+            datatype = "GPFeatureLayer",
+            parameterType = "Required",
+            direction = "Input")
+
+        elsubid1 = arcpy.Parameter(
+            displayName = "Element Subnational ID Field in Species Layer",
+            name = "elsubid1",
+            datatype = "Field",
+            parameterType = "Required",
+            direction = "Input")
+
+        elsubid1.parameterDependencies = [species_lyr.name]
+
+        params = [MarxanDB,species_lyr,elsubid1]
+        return params
+
+    def isLicensed(self):
+        return True
+
+    def updateParameters(self, params):
+        return
+
+    def updateMessages(self, params):
+        return
+
+    def execute(self, params, messages):
+        MarxanDB = params[0].valueAsText
+        species_lyr = params[1].valueAsText
+        elsubid1 = params[2].valueAsText
+
+        pu_layer = os.path.join(MarxanDB,"pulayer","pulayer.shp")
+
+        arcpy.env.workspace = "in_memory"
+
+        arcpy.AddMessage("tabulating area")
+        pu_fc = arcpy.FeatureClassToFeatureClass_conversion(pu_layer,env.workspace,"pu_fc")
+        tab_area = arcpy.TabulateIntersection_analysis(pu_fc,"id",species_lyr,"tab_area",elsubid1)
+
+        arcpy.AlterField_management(tab_area,"id","pu")
+        arcpy.AlterField_management(tab_area,elsubid1,"species")
+        arcpy.AlterField_management(tab_area,"AREA","amount")
+
+        puvspr_dat = os.path.join(MarxanDB,"input","puvspr.dat")
+
+        fields = ["species","pu","amount"]
+
+        with open(puvspr_dat, "a+") as f:
+            f.write('\t'.join(fields)+'\n')
+            with arcpy.da.SearchCursor(tab_area,fields) as cursor:
                 for row in cursor:
                     f.write('\t'.join([str(r) for r in row])+'\n')
         f.close()
