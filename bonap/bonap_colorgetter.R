@@ -133,13 +133,13 @@ arc.write(path = 'W:/Heritage/Heritage_Projects/1495_PlantConservationPlan/bonap
 #####################################################################################################################
 
 # create empty dataframe that will store species responsibility values
-resp <- data.frame(species=character(), pa_proportion=integer())
+resp <- data.frame(species=character(), pa_proportion=integer(), range=character())
 
 # start loop for all species columns
 for(bonap in bonap_maps){
   # select species column and only include if species is present not rare (PNR) or present rare (PR)
   column <- county_tbl %>%
-              select(bonap, PA, area_km2) %>%
+              select(bonap, PA, area_km2, range) %>%
               filter_(paste0(bonap, "=='PNR'|",bonap,"=='PR'"))
  
    # sum area of counties by PA grouping
@@ -151,8 +151,14 @@ for(bonap in bonap_maps){
     val <- 0
   }
   
+  north_num <- nrow(subset(column, column$range=="N"))
+  south_num <- nrow(subset(column, column$range=="S"))
+  range <- ifelse(north_num == 0 & south_num > 0, 'Northern Edge of Range',
+      ifelse(north_num > 0 & south_num == 0, 'Southern Edge of Range', ''
+             ))
+  
   # add row with species name and responsibility value to responsibility df
-  r <- data.frame(species=bonap, resp=val)
+  r <- data.frame(species=bonap, resp=val, ran=range)
   resp <- rbind(resp, r)
 }
 
