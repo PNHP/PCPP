@@ -1,0 +1,5 @@
+setwd("E:/pcpp/PCPP/reference_data/Agalinisdata")
+dat <- read.csv("agalinis count.csv", stringsAsFactors=FALSE)
+plot(dat$year,dat$plants, xlab="year", ylab="population size", col="red", pch=20)
+abline(lm(dat$plants~dat$year),col="gray")
+abline(v=1993,col="orange")

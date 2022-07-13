@@ -45,7 +45,6 @@ eo_ptreps_plants <- arc.select(eo_ptreps, fields=c('ELCODE','SNAME','SCOMNAME','
 eo_ptreps <- NULL
 biotics_records <- unique(eo_ptreps_plants)
 biotics_records <- biotics_records[order(biotics_records$SNAME),]
-
 # if the species is in biotics label it as so
 et_plants$temp_taxostatus[et_plants$SNAME %in% biotics_records$SNAME] <- "in biotics"
 
@@ -62,6 +61,28 @@ et_plants$temp_taxostatus[et_plants$SNAME %in% spec_sspvar_noBiotics] <- "subspe
 #subset out the duplicates and use this from now on!
 et_plants <- et_plants[which(et_plants$temp_taxostatus!="subspecific taxa, effective duplicate"|is.na(et_plants$temp_taxostatus)),]
 
+<<<<<<< HEAD:1_ET_processor.R
+=======
+
+
+
+# rename columns to standard biotic names
+names(et_plants)[names(et_plants)=="S.RANK"] <- "SRANK"
+names(et_plants)[names(et_plants)=="G.RANK"] <- "GRANK"
+names(et_plants)[names(et_plants)=="SCIENTIFIC.NAME"] <- "SNAME"
+names(et_plants)[names(et_plants)=="COMMON.NAME"] <- "SCOMNAME"
+names(et_plants)[names(et_plants)=="PBS.QUALIFIER"] <- "PBSQUAL"
+names(et_plants)[names(et_plants)=="SENSITIVE.SPECIES"] <- "SENSITV_SP"
+names(et_plants)[names(et_plants)=="ELEMENT.SUBNATIONAL.ID"] <- "ELSUBID"
+names(et_plants)[names(et_plants)=="PBS.STATUS"] <- "PBSSTATUS"
+names(et_plants)[names(et_plants)=="PA.FED.STATUS"] <- "USESA"
+names(et_plants)[names(et_plants)=="Rounded.S.RANK"] <- "SRANK_rounded"
+names(et_plants)[names(et_plants)=="Rounded.G.RANK"] <- "GRANK_rounded"
+
+
+
+
+>>>>>>> 811b350d6d47c2f40b71d3391ebdb1c519aa6212:dataprep_ET_processor.R
 #####################################
 #get taxonomic information
 taxo <- read.csv("reference_data/taxonomy.csv",stringsAsFactors=FALSE)
