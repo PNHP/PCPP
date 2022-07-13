@@ -62,7 +62,7 @@ write.csv(not_downloaded, not_down)
 bonap_maps <- list.files(path = image_folder, pattern='\\.tif$')
 bonap_maps <- gsub('\\.tif$', '', bonap_maps)
 for(s in bonap_maps){
-  file.copy(paste0(projection_file,".tfwx"), paste0(image_folder,"/",s,".tfwx"), overwrite=TRUE)
   file.copy(paste0(projection_file,".tif.aux.xml"), paste0(image_folder,"/",s,".tif.aux.xml"), overwrite=TRUE)
   file.copy(paste0(projection_file,".tif.xml"), paste0(image_folder,"/",s,".tif.xml"), overwrite=TRUE)
 }
+

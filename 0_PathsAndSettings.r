@@ -7,7 +7,7 @@ if (!requireNamespace("reshape2", quietly=TRUE)) install.packages("reshape2")
 require(reshape2)
 
 # Set input paths ----
-working_directory <- "E:/pcpp/PCPP"
+working_directory <- "H:/Scripts/PCPP"
 output_directory <- paste(working_directory,"output",sep="/")
 databasename <- "PlantConservationPlan.sqlite"
 graphics_path <- "output/images/"

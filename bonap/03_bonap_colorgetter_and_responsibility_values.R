@@ -28,12 +28,14 @@ if (!requireNamespace("data.table", quietly=TRUE)) install.packages("data.table"
 require(data.table)
 if (!requireNamespace("rgdal", quietly=TRUE)) install.packages("rgdal")
 require(rgdal)
+if (!requireNamespace("raster", quietly=TRUE)) install.packages("raster")
+require(raster)
 
 # set path to bonap image folder, image geodatabase, county centroids.
 image_folder <- 'W:/Heritage/Heritage_Projects/1495_PlantConservationPlan/bonap/bonap_originals'
 image_gdb <- 'W:/Heritage/Heritage_Projects/1495_PlantConservationPlan/bonap/bonap_rasters.gdb'
 county_centroids <- 'W:/Heritage/Heritage_Projects/1495_PlantConservationPlan/bonap/bonap.gdb/county_centroids'
-et <- 'W:/Heritage/Heritage_Projects/1495_PlantConservationPlan/PCPP_ET_2018.csv'
+et <- 'W:/Heritage/Heritage_Projects/1495_PlantConservationPlan/PCPP_DB/et_plants.csv'
 url_base <- 'http://bonap.net/MapGallery/County/'
 projection_file <- 'W:/Heritage/Heritage_Projects/1495_PlantConservationPlan/BONAP/bonap_projection'
 
@@ -90,13 +92,16 @@ bonap_maps <- gsub('ssp.', 'ssp', bonap_maps, fixed=TRUE)
 # start loop
 for(bonap in bonap_maps){
   # load in species raster from GDB
-  map <- arc.open(paste(image_gdb,bonap,sep="/"))
-  map <- arc.raster(map)
-  map <- as.raster(map)
+  # map <- arc.open(paste(image_gdb,bonap,sep="/"))
+  # map <- arc.raster(map)
+  # map <- as.raster(map)
   
-        #map <- readGDAL(paste0(image_folder,"/",bonap,".tif"))
-        #crs(map) <- "+proj=laea +lat_0=45 +lon_0=-100 +x_0=0 +y_0=0 +a=6370997 +b=6370997 +units=m +no_defs"
-        #extent(map) <- extent(-2375340, 3008685, -2562062, 742518)
+  map <- readGDAL(paste0(image_folder,"/",bonap,".tif"))
+  map <- readGDAL(paste0(image_folder,"/","Abies balsamea.tif"))
+  proj4string(map) <- CRS("+proj=laea +lat_0=45 +lon_0=-100 +x_0=0 +y_0=0 +a=6370997 +b=6370997 +units=m +no_defs")
+  extent(map) <- extent(-2375340, 3008685, -2562062, 742518)
+  
+  
 
   # extract RGB values to county centroid points
   result <- extract(map, counties_shape)
@@ -115,7 +120,7 @@ for(bonap in bonap_maps){
           ifelse(merge$Band_1 == 255 & merge$Band_2 == 165 & merge$Band_3 == 0, 'EXT', 'color not found'
           ))))))))))
   
-  # change column name and join to country table
+  # change column name and join to county table
   colnames(merge)[colnames(merge)=='bonap'] <- bonap
   county_tbl <- cbind(county_tbl, merge[ncol(merge)])
 }
