@@ -2,7 +2,7 @@
 #   run. The goal is to avoid redundancy and improve consistency among scripts.
 
 # Set input paths ----
-working_directory <- "E:/pcpp/PCPP"
+working_directory <- "H:/Scripts/PCPP"
 output_directory <- paste(working_directory,"output",sep="/")
 databasename <- "PlantConservationPlan.sqlite"
 graphics_path <- "output/images/"
